@@ -1,0 +1,11 @@
+# 统一文本换行符为 LF，避免 Windows / Linux 协作时的差异
+* text=auto eol=lf
+
+# 二进制文件（不参与文本换行转换）
+*.wasm binary
+*.task binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.ico binary

@@ -1,10 +1,12 @@
-fastapi
-uvicorn[standard]
-gunicorn
-pydantic
-python-multipart
-pymysql
-numpy
-Pillow
+# 版本为"已知可用"的下限（在 Python 3.10 + MariaDB 环境实测通过）。
+# 如需完全可复现的构建，可在部署环境执行 pip freeze > constraints.txt 生成锁文件。
+fastapi>=0.110
+uvicorn[standard]>=0.29
+gunicorn>=21.2
+pydantic>=2.5
+python-multipart>=0.0.9
+pymysql>=1.1
+numpy>=1.24
+Pillow>=10.0
 mediapipe>=0.10,<0.11
-opencv-python-headless
+opencv-python-headless>=4.8

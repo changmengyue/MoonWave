@@ -33,9 +33,13 @@ import webbrowser
 app = FastAPI(title="运动康复智能指导系统后端")
 
 # 认证走 Authorization 头而非 Cookie, 不需要 credentials
+# CORS 来源: 默认 "*" 便于本地开发。生产环境请用环境变量收紧为实际域名, 例如:
+#   CORS_ALLOW_ORIGINS="https://your-domain.example,https://www.your-domain.example"
+_cors_env = os.getenv("CORS_ALLOW_ORIGINS", "*").strip()
+_cors_origins = ["*"] if _cors_env in ("", "*") else [o.strip() for o in _cors_env.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],

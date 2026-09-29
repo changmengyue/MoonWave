@@ -99,13 +99,19 @@ pip install -r requirements.txt
 | `DB_PORT` | 数据库端口 | `3306` |
 | `MEDIAPIPE_DISABLE_GPU` | 无 GPU / headless 环境设为 `1` | 未设 |
 | `NO_BROWSER` | 设为 `1` 时不自动打开浏览器 | 未设 |
+| `CORS_ALLOW_ORIGINS` | 允许的跨域来源，逗号分隔。**默认 `*`（仅便于本地开发）**，生产请收紧为实际域名 | `*` |
 
 示例（Linux / macOS）：
 
 ```bash
 export DB_PASS='你的数据库密码'
 export MEDIAPIPE_DISABLE_GPU=1
+export NO_BROWSER=1
+# 生产环境收紧跨域来源（示例）：
+# export CORS_ALLOW_ORIGINS='https://your-domain.example,https://www.your-domain.example'
 ```
+
+> ⚠️ 生产环境请务必设置 `CORS_ALLOW_ORIGINS` 为你的实际域名，不要保留 `*`。
 
 ### 4. 前端姿态资产（自托管）
 浏览器端姿态估计需要 MediaPipe 资产（模型 + wasm）。本仓库已将资产放在 `mediapipe/`，并需由 Web 服务器以正确 MIME 提供；详见 [docs/MEDIAPIPE_ASSETS.md](docs/MEDIAPIPE_ASSETS.md)。

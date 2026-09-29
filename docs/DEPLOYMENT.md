@@ -37,6 +37,9 @@ python3 -m venv venv
 | `DB_HOST` / `DB_USER` / `DB_PASS` / `DB_NAME` / `DB_PORT` | 数据库连接（`DB_PASS` 必填） |
 | `MEDIAPIPE_DISABLE_GPU` | 无 GPU / headless 环境设为 `1` |
 | `NO_BROWSER` | 设为 `1`，避免启动时尝试打开浏览器 |
+| `CORS_ALLOW_ORIGINS` | 允许的跨域来源（逗号分隔）。默认 `*`，**生产环境请收紧为实际域名**，如 `https://your-domain.example` |
+
+> ⚠️ 默认 `CORS_ALLOW_ORIGINS=*` 只适合本地开发；生产环境请务必收紧，避免任意站点携带凭据访问你的接口。
 
 ## 3. systemd 服务
 
@@ -56,6 +59,7 @@ Environment=DB_PASS=在此填写数据库密码
 Environment=DB_NAME=rehab_db
 Environment=MEDIAPIPE_DISABLE_GPU=1
 Environment=NO_BROWSER=1
+Environment=CORS_ALLOW_ORIGINS=https://your-domain.example
 ExecStart=/opt/moonwave/venv/bin/uvicorn zitaishibie:app --host 127.0.0.1 --port 8000
 Restart=always
 RestartSec=3
@@ -142,6 +146,7 @@ curl -sk -o /dev/null -w '%{http_code}\n' https://your-domain.example/zitaishibi
 部署前请逐项确认（详见 [SECURITY.md](../SECURITY.md)）：
 
 - [ ] 数据库密码通过环境变量提供，未硬编码、未入库；
+- [ ] **已设置 `CORS_ALLOW_ORIGINS` 为实际域名（未保留 `*`）**；
 - [ ] 后端只监听 `127.0.0.1`，未直接暴露到公网；
 - [ ] 静态资源为白名单方式，源码/备份/配置不可被下载；
 - [ ] 已启用 HTTPS，证书私钥权限正确；

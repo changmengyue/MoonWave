@@ -15,6 +15,29 @@
 | `vision_wasm_nosimd_internal.js` | 205 KB | 非 SIMD 版加载器 |
 | `vision_wasm_nosimd_internal.wasm` | 9.3 MB | 非 SIMD 版运行时 |
 
+## 版本说明
+
+| 组件 | 版本 | 备注 |
+|---|---|---|
+| 后端 Python 包 `mediapipe` | **0.10.9** | 与本仓库联调通过（`requirements.txt` 限定 `>=0.10,<0.11`） |
+| 前端 JS 资产（`vision_bundle.mjs` + wasm） | **`@mediapipe/tasks-vision` 0.10.x** | 打包文件已压缩，**未内嵌可读的版本号**，无法精确到补丁号；按 0.10 线选取 |
+| 模型 `pose_landmarker_lite.task` | 与上述 tasks-vision **同期** | Pose Landmarker lite 模型 |
+
+> 由于压缩产物里没有版本字符串，这里只能标注到 **0.10.x**。若你需要精确版本，建议直接以官方最新 **0.10.x** 重新拉取并覆盖 `mediapipe/`（前后端保持在 0.10 线即可），或与后端 `mediapipe` 版本保持一致。
+
+### 如何更新到最新 0.10.x
+
+```bash
+# 1) 取前端 JS 资产(以 npm 包为例)
+npm pack @mediapipe/tasks-vision@0.10
+tar -xzf mediapipe-tasks-vision-0.10.*.tgz
+# package/vision_bundle.mjs 与 package/wasm/vision_wasm_*_internal.{js,wasm} 即为所需文件
+
+# 2) 取姿态模型(官方模型库中的 pose_landmarker_lite.task)
+
+# 3) 覆盖本仓库 mediapipe/ 下的同名文件即可
+```
+
 ## 前端如何引用
 
 `index.html` 中的模块脚本：

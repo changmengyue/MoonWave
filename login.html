@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo1.jpg" type="image/jpeg">
+    <title>月波康复 · AI 运动康复指导</title>
+    <style>
+        :root{
+            --bg:#FDFBF7; --ink:#1c1816; --ink2:#2b2724; --muted:#6d645a;
+            --hair:rgba(28,24,22,.08); --cream:#fffdf9;
+            --serif:"Lora","Noto Serif SC","Songti SC","SimSun",Georgia,serif;
+            --sans:"Plus Jakarta Sans","Geist","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+            --gold:#b0854a; --espresso:#2e2a27;
+            --ease:cubic-bezier(.22,.61,.36,1); --spring:cubic-bezier(.34,1.3,.4,1);
+        }
+        *{margin:0;padding:0;box-sizing:border-box;font-family:var(--sans);}
+        body{
+            min-height:100dvh; display:flex; align-items:center; justify-content:center;
+            background:var(--bg); color:var(--ink); padding:24px; position:relative; overflow:hidden;
+        }
+        /* 月光氛围 + 胶片噪点 */
+        body::before{
+            content:""; position:fixed; inset:0; pointer-events:none;
+            background:
+                radial-gradient(60% 50% at 78% 18%, rgba(176,133,74,.10), transparent 60%),
+                radial-gradient(50% 55% at 20% 85%, rgba(124,143,111,.12), transparent 60%);
+            z-index:0;
+        }
+        body::after{
+            content:""; position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.03;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        .wrap{ position:relative; z-index:1; width:100%; max-width:26rem; text-align:center; }
+
+        /* 品牌区 */
+        .brand{ margin-bottom:34px; }
+        .eyebrow{
+            display:inline-block; padding:7px 14px; border-radius:999px; font-size:11px; letter-spacing:.22em;
+            text-transform:uppercase; color:var(--muted); border:1px solid var(--hair); background:rgba(255,255,255,.5);
+            margin-bottom:18px;
+        }
+        .brand .logo{
+            width:96px; height:96px; margin:0 auto 18px; background:#fff; border-radius:50%;
+            display:flex; align-items:center; justify-content:center; overflow:hidden;
+            box-shadow:0 14px 40px rgba(46,42,39,.12), inset 0 1px 1px rgba(255,255,255,.9);
+        }
+        .brand .logo img{ width:72px; height:auto; display:block; }
+        .brand h1{ font-family:var(--serif); font-size:38px; font-weight:600; letter-spacing:1px; color:var(--ink); }
+        .brand p{ font-size:13px; color:var(--muted); margin-top:10px; letter-spacing:.02em; }
+
+        /* 双边框卡片 (Double-Bezel) */
+        .shell{
+            padding:1.5px; border-radius:26px;
+            background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(28,24,22,.04));
+            box-shadow:0 24px 70px rgba(46,42,39,.10), inset 0 1px 1px rgba(255,255,255,.8);
+        }
+        .core{
+            background:var(--cream); border-radius:24px; padding:34px 26px 24px;
+            box-shadow:inset 0 1px 1px rgba(255,255,255,.6);
+        }
+
+        .field{ margin-bottom:16px; }
+        .field input{
+            width:100%; height:52px; padding:0 18px; font-size:15px; color:var(--ink);
+            border:1px solid var(--hair); border-radius:16px; background:rgba(255,255,255,.75);
+            transition:border-color .2s var(--ease), box-shadow .2s var(--ease);
+        }
+        .field input::placeholder{ color:#a9a094; }
+        .field input:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 4px rgba(176,133,74,.10); }
+
+        .link-sms{ text-align:right; margin:-4px 0 18px; }
+        .link-sms a{ color:var(--muted); text-decoration:none; font-size:13px; cursor:pointer; }
+        .link-sms a:hover{ color:var(--ink); }
+
+        /* 按钮: 内嵌箭头 (Button-in-Button) */
+        .btn{
+            width:100%; height:54px; border:none; border-radius:999px; cursor:pointer;
+            background:var(--espresso); color:#fdfcf9; font-size:16px; font-weight:600;
+            display:flex; align-items:center; justify-content:center; gap:10px;
+            transition:transform .2s var(--spring), background .2s var(--ease);
+            box-shadow:0 12px 30px rgba(46,42,39,.18);
+        }
+        .btn:hover{ transform:translateY(-1px); }
+        .btn:active{ transform:scale(.98); }
+        .btn .arr{
+            width:26px; height:26px; border-radius:50%; background:rgba(255,255,255,.18);
+            display:flex; align-items:center; justify-content:center; font-size:14px;
+            transition:transform .25s var(--spring);
+        }
+        .btn:hover .arr{ transform:translate(2px,-2px) scale(1.08); }
+
+        .msg{ min-height:20px; margin-top:14px; font-size:13px; text-align:center; color:#b5482f; }
+
+        .end-links{ margin-top:22px; display:flex; justify-content:center; align-items:center; gap:14px; font-size:13px; color:#9c948a; }
+        .end-links a{ color:var(--muted); text-decoration:none; cursor:pointer; }
+        .end-links a:hover{ color:var(--ink); text-decoration:underline; }
+
+        /* 入场动效: 上浮+模糊淡入 */
+        .reveal{ opacity:0; transform:translateY(18px); filter:blur(6px); animation:rise .9s var(--ease) forwards; }
+        .reveal.d1{ animation-delay:.08s; } .reveal.d2{ animation-delay:.18s; } .reveal.d3{ animation-delay:.28s; }
+        @keyframes rise{ to{ opacity:1; transform:none; filter:none; } }
+
+        @media (max-width:420px){
+            body{ padding:16px; }
+            .brand h1{ font-size:32px; } .brand .logo{ width:82px; height:82px; } .brand .logo img{ width:60px; }
+            .core{ padding:26px 18px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="brand reveal">
+            <span class="eyebrow">AI 运动康复 · 月引潮汐</span>
+            <div class="logo"><img src="/logo1.jpg" alt="月波康复"></div>
+            <h1>月波康复</h1>
+            <p>MoonWave · AI 伴你康复</p>
+        </div>
+
+        <div class="shell reveal d1">
+            <div class="core">
+                <!-- 登录 -->
+                <div id="login-form">
+                    <div class="field"><input type="text" id="login-username" placeholder="用户名 / 手机号" autocomplete="username"></div>
+                    <div class="field"><input type="password" id="login-password" placeholder="密码" autocomplete="current-password"></div>
+                    <div class="link-sms"><a onclick="todo('短信验证码登录暂未开通')">短信验证码登录</a></div>
+                    <button class="btn reveal d2" onclick="loginUser()">登 录</button>
+                    <div id="login-msg" class="msg reveal d3"></div>
+                    <div class="end-links reveal d3">
+                        <a onclick="showRegister()">注册</a><span>|</span><a onclick="todo('忘记密码功能暂未开通')">忘记密码</a><span>|</span><a onclick="todo('遇到问题请联系管理员')">遇到问题</a>
+                    </div>
+                </div>
+
+                <!-- 注册 -->
+                <div id="register-form" style="display:none;">
+                    <div class="field"><input type="text" id="register-username" placeholder="用户名" autocomplete="username"></div>
+                    <div class="field"><input type="password" id="register-password" placeholder="密码" autocomplete="new-password"></div>
+                    <div class="field"><input type="password" id="register-confirm" placeholder="确认密码" autocomplete="new-password"></div>
+                    <button class="btn" onclick="registerUser()">注 册</button>
+                    <div id="register-msg" class="msg"></div>
+                    <div class="end-links"><a onclick="showLogin()">返回登录</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var API_BASE='';
+        function showLogin(){ document.getElementById('login-form').style.display='block'; document.getElementById('register-form').style.display='none'; }
+        function showRegister(){ document.getElementById('login-form').style.display='none'; document.getElementById('register-form').style.display='block'; }
+        function todo(t){ alert(t||'功能暂未开通'); }
+        function msg(id,text,ok){ var el=document.getElementById(id); el.style.color=ok?'#2e8b57':'#b5482f'; el.textContent=text; }
+        async function loginUser(){
+            var u=document.getElementById('login-username').value.trim(), p=document.getElementById('login-password').value;
+            msg('login-msg','',true);
+            if(!u||!p){ msg('login-msg','请输入用户名和密码',false); return; }
+            try{
+                var r=await fetch(API_BASE+'/api/user/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+                var d=await r.json();
+                if(d.code===200){ localStorage.setItem('rehab_token',d.data.token); localStorage.setItem('rehab_username',d.data.username); msg('login-msg','登录成功，正在进入...',true); setTimeout(function(){ window.location.href='/'; },500); }
+                else msg('login-msg', d.message||'登录失败', false);
+            }catch(e){ msg('login-msg','网络错误：'+e.message,false); }
+        }
+        async function registerUser(){
+            var u=document.getElementById('register-username').value.trim(), p=document.getElementById('register-password').value, c=document.getElementById('register-confirm').value;
+            msg('register-msg','',true);
+            if(!u||!p){ msg('register-msg','用户名和密码不能为空',false); return; }
+            if(p!==c){ msg('register-msg','两次密码输入不一致',false); return; }
+            try{
+                var r=await fetch(API_BASE+'/api/user/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+                var d=await r.json();
+                if(d.code===200){ msg('register-msg','注册成功，请登录',true); setTimeout(showLogin,700); }
+                else msg('register-msg', d.message||'注册失败', false);
+            }catch(e){ msg('register-msg','网络错误：'+e.message,false); }
+        }
+        (function(){ if(localStorage.getItem('rehab_token')){ window.location.href='/'; } })();
+    </script>
+</body>
+</html>

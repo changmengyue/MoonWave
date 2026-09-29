@@ -1,0 +1,298 @@
+{
+  "肩周炎": {
+    "name": "肩周炎康复方案",
+    "disease": "肩周炎 / 肩关节术后恢复期",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、体能偏弱的用户，动作轻柔、幅度偏小",
+        "warning": false,
+        "actions": [
+          {"action": "肩关节前屈", "sets": 2, "reps": 10, "note": "小幅前举，不追求幅度"},
+          {"action": "肩关节外展", "sets": 2, "reps": 10, "note": "小幅外展，放松肩部"},
+          {"action": "右肩关节仰卧被动前屈", "sets": 2, "reps": 10, "note": "被动前屈，逐步扩大范围"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，强度中等",
+        "warning": false,
+        "actions": [
+          {"action": "肩关节前屈", "sets": 3, "reps": 12, "note": "逐步加大前举幅度"},
+          {"action": "肩关节外展", "sets": 3, "reps": 12, "note": "扩大外展活动度"},
+          {"action": "手臂上举", "sets": 3, "reps": 12, "note": "前举训练，改善活动度"},
+          {"action": "右肩关节仰卧被动前屈", "sets": 3, "reps": 15, "note": "被动前屈，巩固范围"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "肩关节前屈", "sets": 4, "reps": 15, "note": "满幅前举，强化肩带"},
+          {"action": "肩关节外展", "sets": 3, "reps": 15, "note": "满幅外展，强化肌力"},
+          {"action": "右臂上举", "sets": 3, "reps": 15, "note": "负重前举，增强力量"},
+          {"action": "手臂上举", "sets": 3, "reps": 15, "note": "稳定前举，巩固活动度"}
+        ]
+      }
+    ],
+    "solo_actions": ["肩关节前屈", "肩关节外展", "右臂上举", "手臂上举", "右肩关节仰卧被动前屈", "左肩关节仰卧被动前屈"]
+  },
+  "关节炎": {
+    "name": "关节炎恢复方案",
+    "disease": "骨关节炎 / 关节术后恢复期",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、体能偏弱的用户，以恢复关节活动度为主",
+        "warning": false,
+        "actions": [
+          {"action": "坐位伸膝", "sets": 2, "reps": 10, "note": "轻负荷强化股四头肌"},
+          {"action": "左膝关节坐位主动屈伸", "sets": 2, "reps": 10, "note": "无负重恢复膝屈伸"},
+          {"action": "右膝关节坐位主动屈伸", "sets": 2, "reps": 10, "note": "对侧膝屈伸"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，中等强度",
+        "warning": false,
+        "actions": [
+          {"action": "坐位伸膝", "sets": 3, "reps": 15, "note": "强化股四头肌"},
+          {"action": "左腿直腿抬高", "sets": 3, "reps": 12, "note": "闭链前强化，稳定膝关节"},
+          {"action": "左膝关节坐位主动屈伸", "sets": 3, "reps": 15, "note": "巩固膝屈伸"},
+          {"action": "右膝关节坐位主动屈伸", "sets": 3, "reps": 15, "note": "对侧巩固"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "终末伸膝", "sets": 4, "reps": 15, "note": "股四头肌内侧头强化"},
+          {"action": "坐位伸膝", "sets": 3, "reps": 20, "note": "高强度伸膝强化"},
+          {"action": "膝关节屈曲", "sets": 4, "reps": 15, "note": "恢复并强化膝屈曲"},
+          {"action": "左腿直腿抬高", "sets": 4, "reps": 12, "note": "下肢肌力巩固"}
+        ]
+      }
+    ],
+    "solo_actions": ["坐位伸膝", "左膝关节坐位主动屈伸", "右膝关节坐位主动屈伸", "左肘关节坐位主动屈伸", "右肘关节坐位主动屈伸"]
+  },
+  "颈椎不适": {
+    "name": "颈椎不适方案",
+    "disease": "颈椎病 / 颈肩僵硬",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、体能偏弱的用户，以放松肩颈为主",
+        "warning": false,
+        "actions": [
+          {"action": "肩关节前屈", "sets": 2, "reps": 10, "note": "放松颈肩"},
+          {"action": "手臂上举", "sets": 2, "reps": 10, "note": "前举放松"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，中等强度",
+        "warning": false,
+        "actions": [
+          {"action": "肩关节前屈", "sets": 3, "reps": 12, "note": "改善颈肩活动度"},
+          {"action": "肩关节外展", "sets": 3, "reps": 12, "note": "扩大外展，放松肩带"},
+          {"action": "手臂上举", "sets": 3, "reps": 12, "note": "前举训练"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "肩关节前屈", "sets": 4, "reps": 15, "note": "满幅前举强化"},
+          {"action": "右臂上举", "sets": 3, "reps": 15, "note": "负重前举，增强肩带力量"},
+          {"action": "肩关节外展", "sets": 3, "reps": 15, "note": "满幅外展强化"}
+        ]
+      }
+    ],
+    "solo_actions": ["肩关节前屈", "肩关节外展", "手臂上举", "右肩关节仰卧被动前屈"]
+  },
+  "腰肌劳损": {
+    "name": "腰肌劳损方案",
+    "disease": "下背痛 / 腰肌劳损恢复期",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、体能偏弱的用户，以轻柔激活为主",
+        "warning": false,
+        "actions": [
+          {"action": "臀桥", "sets": 2, "reps": 10, "note": "轻柔激活臀肌/核心，稳定腰椎"},
+          {"action": "屈膝训练", "sets": 2, "reps": 10, "note": "激活下肢，减轻腰部负担"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，中等强度",
+        "warning": false,
+        "actions": [
+          {"action": "臀桥", "sets": 3, "reps": 12, "note": "强化臀肌/核心"},
+          {"action": "左腿直腿抬高", "sets": 3, "reps": 12, "note": "强化下肢/核心稳定"},
+          {"action": "屈膝训练", "sets": 3, "reps": 15, "note": "激活下肢肌群"},
+          {"action": "髋关节外展", "sets": 3, "reps": 12, "note": "稳定髋部，减轻腰部代偿"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "臀桥", "sets": 4, "reps": 15, "note": "强化臀部/核心，稳定腰椎"},
+          {"action": "左腿直腿抬高", "sets": 4, "reps": 15, "note": "下肢肌力强化"},
+          {"action": "髋关节外展", "sets": 3, "reps": 15, "note": "髋部稳定强化"},
+          {"action": "提踵训练", "sets": 3, "reps": 15, "note": "下肢力量，改善步态"}
+        ]
+      }
+    ],
+    "solo_actions": ["臀桥", "左腿直腿抬高", "屈膝训练", "髋关节外展", "提踵训练"]
+  },
+  "膝关节炎": {
+    "name": "膝关节炎方案",
+    "disease": "膝关节骨关节炎 / 膝术后",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、体能偏弱的用户，以无负重恢复活动度为主",
+        "warning": false,
+        "actions": [
+          {"action": "坐位伸膝", "sets": 2, "reps": 10, "note": "轻负荷强化股四头肌"},
+          {"action": "膝关节屈曲", "sets": 2, "reps": 10, "note": "无负重恢复膝屈曲"},
+          {"action": "终末伸膝", "sets": 2, "reps": 10, "note": "股四头肌内侧头激活"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，中等强度",
+        "warning": false,
+        "actions": [
+          {"action": "坐位伸膝", "sets": 3, "reps": 15, "note": "强化股四头肌"},
+          {"action": "终末伸膝", "sets": 3, "reps": 15, "note": "股四头肌内侧头"},
+          {"action": "靠墙静蹲", "sets": 3, "reps": 12, "note": "闭链训练"},
+          {"action": "左腿直腿抬高", "sets": 3, "reps": 12, "note": "下肢肌力"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "靠墙静蹲", "sets": 4, "reps": 15, "note": "闭链力量强化"},
+          {"action": "左腿直腿抬高", "sets": 4, "reps": 15, "note": "下肢肌力巩固"},
+          {"action": "膝关节屈曲", "sets": 4, "reps": 15, "note": "强化膝屈曲"},
+          {"action": "提踵训练", "sets": 3, "reps": 15, "note": "小腿力量，改善步态"}
+        ]
+      }
+    ],
+    "solo_actions": ["膝关节屈曲", "坐位伸膝", "终末伸膝", "靠墙静蹲", "左膝关节坐位主动屈伸", "右膝关节坐位主动屈伸", "左腿直腿抬高"]
+  },
+  "术后康复": {
+    "name": "术后康复方案",
+    "disease": "骨科术后恢复期",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、术后早期用户，以恢复活动度、轻柔激活为主",
+        "warning": false,
+        "actions": [
+          {"action": "屈膝训练", "sets": 2, "reps": 10, "note": "早期恢复膝活动度"},
+          {"action": "膝关节屈曲", "sets": 2, "reps": 10, "note": "轻柔膝屈曲"},
+          {"action": "臀桥", "sets": 2, "reps": 10, "note": "轻柔激活核心/臀肌"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，中等强度",
+        "warning": false,
+        "actions": [
+          {"action": "屈膝训练", "sets": 3, "reps": 12, "note": "巩固膝活动度"},
+          {"action": "膝关节屈曲", "sets": 3, "reps": 15, "note": "强化膝屈曲"},
+          {"action": "臀桥", "sets": 3, "reps": 12, "note": "核心/臀肌强化"},
+          {"action": "髋关节外展", "sets": 3, "reps": 12, "note": "髋部稳定"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "臀桥", "sets": 4, "reps": 15, "note": "核心/臀肌强化力量"},
+          {"action": "左腿直腿抬高", "sets": 4, "reps": 15, "note": "下肢肌力强化"},
+          {"action": "髋关节外展", "sets": 3, "reps": 15, "note": "髋部稳定强化"},
+          {"action": "靠墙静蹲", "sets": 3, "reps": 12, "note": "闭链力量，逐步负重"}
+        ]
+      }
+    ],
+    "solo_actions": ["屈膝训练", "膝关节屈曲", "臀桥", "髋关节外展", "左腿直腿抬高"]
+  },
+  "其他方案": {
+    "name": "通用康复方案",
+    "disease": "其他不适 / 综合调理",
+    "plans": [
+      {
+        "stage": "early",
+        "title": "方案一（前期训练）",
+        "audience": "面向较少接触康复训练、体能偏弱的用户，动作轻柔保守",
+        "warning": false,
+        "actions": [
+          {"action": "靠墙静蹲", "sets": 2, "reps": 10, "note": "轻幅静蹲，保守负荷"},
+          {"action": "肩关节前屈", "sets": 2, "reps": 10, "note": "轻柔活动肩部"},
+          {"action": "提踵训练", "sets": 2, "reps": 10, "note": "轻柔提踵"}
+        ]
+      },
+      {
+        "stage": "mid",
+        "title": "方案二（中期训练）",
+        "audience": "面向身体素质较好、有一定训练基础的用户，中等强度",
+        "warning": false,
+        "actions": [
+          {"action": "靠墙静蹲", "sets": 3, "reps": 12, "note": "闭链下蹲强化"},
+          {"action": "髋关节外展", "sets": 3, "reps": 12, "note": "稳定髋部"},
+          {"action": "左膝关节坐位主动屈伸", "sets": 3, "reps": 12, "note": "恢复膝活动度"}
+        ]
+      },
+      {
+        "stage": "late",
+        "title": "方案三（后期训练）",
+        "audience": "面向基本康复、体能较好的用户，强度较大，请谨慎选择",
+        "warning": true,
+        "warning_text": "该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。",
+        "actions": [
+          {"action": "靠墙静蹲", "sets": 4, "reps": 15, "note": "闭链力量强化"},
+          {"action": "髋关节外展", "sets": 3, "reps": 15, "note": "髋部力量强化"},
+          {"action": "提踵训练", "sets": 4, "reps": 15, "note": "小腿力量"},
+          {"action": "膝关节屈曲", "sets": 4, "reps": 15, "note": "膝关节力量巩固"}
+        ]
+      }
+    ],
+    "solo_actions": ["靠墙静蹲", "肩关节前屈", "提踵训练", "髋关节外展", "膝关节屈曲", "左膝关节坐位主动屈伸"]
+  }
+}

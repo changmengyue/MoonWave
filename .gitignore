@@ -1,0 +1,40 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# ---- 环境变量 / 密钥(切勿提交) ----
+.env
+.env.*
+*.pem
+*.key
+secrets.*
+credentials.*
+
+# ---- 运行期数据 / 备份 ----
+*.log
+*.db
+*.sqlite3
+rehab_refs.json
+backups/
+备份/
+
+# ---- 构建产物 ----
+build/
+dist/
+*.spec
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ---- 私有字体(注意授权, 勿上传) ----
+*.ttf
+*.otf

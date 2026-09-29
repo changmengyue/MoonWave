@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+gunicorn
+pydantic
+python-multipart
+pymysql
+numpy
+Pillow
+mediapipe
+opencv-python-headless

@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/logo1.jpg" type="image/jpeg">
+    <title>月波 · AI 运动康复指导</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        body {
+            background-color: #F8F9F6;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(102, 187, 106, 0.03) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(129, 212, 250, 0.03) 0%, transparent 25%),
+                repeating-linear-gradient(45deg, rgba(102, 187, 106, 0.02) 0px, rgba(102, 187, 106, 0.02) 2px, transparent 2px, transparent 8px);
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+            color: #555555;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 48px;
+            opacity: 0.12;
+            color: var(--gold);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 80px;
+            right: 30px;
+            font-size: 64px;
+            opacity: 0.1;
+            color: #FFAB91;
+            pointer-events: none;
+            z-index: 0;
+            transform: rotate(10deg);
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        /* 导航栏 */
+        .tabs {
+            display: flex;
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 20px 20px 16px 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            flex-wrap: wrap;
+            padding: 6px;
+            border: 1px solid rgba(102, 187, 106, 0.08);
+        }
+        .tab-item {
+            padding: 14px 22px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #6B7A8F;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            margin: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            white-space: nowrap;
+        }
+        .tab-item svg { flex: 0 0 auto; opacity: .85; }
+        .tab-item:hover {
+            background-color: rgba(102, 187, 106, 0.08);
+            color: var(--gold);
+            transform: translateY(-1px);
+        }
+        .tab-item.active {
+            color: var(--gold);
+            background: rgba(102, 187, 106, 0.05);
+            font-weight: 600;
+        }
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            padding: 24px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(102, 187, 106, 0.1);
+        }
+        .tab-content.active {
+            display: block;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* ---------- 主页 ---------- */
+        .home-container {
+            text-align: center;
+            padding: 30px 20px 40px;
+        }
+        .home-title {
+            font-size: 40px;
+            color: #2D3748;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 6px rgba(102, 187, 106, 0.08);
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0.5; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body::after, body::before { display: none; }
+        }
+
+        /* ---------- 通用组件 ---------- */
+        .video-box h2, .control-panel h2, .func-box h2, .upload-section h2, .result-section h2 {
+            color: #2D3748;
+            margin-bottom: 18px;
+            font-size: 22px;
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid rgba(102, 187, 106, 0.2);
+            font-weight: 600;
+        }
+        .core-layout {
+            display: grid;
+            grid-template-columns: 70% 30%;
+            gap: 24px;
+        }
+        #video-stream {
+            width: 100%;
+            border-radius: 20px;
+            border: 1px solid rgba(102, 187, 106, 0.15);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+            transform: scaleX(-1);   /* 前置摄像头镜像显示, 与镜面视角一致 */
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4A5A6A;
+            font-weight: 500;
+        }
+        .form-group select, .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #E2E8F0;
+            border-radius: 14px;
+            font-size: 14px;
+            background: rgba(255,255,255,0.8);
+            transition: all 0.3s;
+            color: #2D3748;
+        }
+        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.1);
+            outline: none;
+        }
+        .btn {
+            padding: 12px 22px;
+            background: linear-gradient(145deg, var(--gold), #5CAE60);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 12px rgba(102, 187, 106, 0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn:hover {
+            background: linear-gradient(145deg, #5CAE60, #4C9A50);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px rgba(102, 187, 106, 0.3);
+        }
+        .btn-success {
+            background: linear-gradient(145deg, var(--gold), #5CAE60);
+        }
+        .btn-warning {
+            background: linear-gradient(145deg, #FFAB91, #F89B7A);
+            box-shadow: 0 6px 12px rgba(255, 171, 145, 0.2);
+        }
+        .btn-warning:hover {
+            background: linear-gradient(145deg, #F89B7A, #E88B6A);
+        }
+        .btn-primary {
+            background: linear-gradient(145deg, #81D4FA, #6DC4E8);
+            box-shadow: 0 6px 12px rgba(129, 212, 250, 0.2);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #6DC4E8, #5DB4D8);
+        }
+        .result-box, .records-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 20px;
+            border-left: 5px solid var(--gold);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.02);
+        }
+        .result-box h3, .records-box h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #2D3748;
+        }
+        .result-content, .record-item {
+            font-size: 14px;
+            color: #4A5A6A;
+            line-height: 1.6;
+        }
+        .record-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102,187,106,0.1);
+        }
+        .eval-status {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .eval-status.running {
+            background: var(--gold);
+            color: white;
+        }
+        .eval-status.stopped {
+            background: #A0AEC0;
+            color: white;
+        }
+
+        /* 图片分析 / 动作库卡片 */
+        .image-analysis-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        .more-func-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        /* 动作库管理主界面: 详情通栏 + 底部新增入口 */
+        .more-lib-layout{ display:flex; flex-direction:column; gap:16px; }
+        .func-box-full{ width:100%; }
+        .more-add-entry{ text-align:center; margin-top:4px; }
+        /* 动作库详情列表分两列排布, 通栏占满页面 */
+        #more-tab .action-list-container{ display:grid; grid-template-columns:1fr 1fr; gap:14px 18px; max-height:none; }
+        #more-tab .action-list-container .action-list-item{ margin:0; }
+        /* 新增康复动作独立页: 表单单栏居中 + 底部返回 */
+        #addaction-tab .add-action-form{ max-width:720px; margin:0 auto; }
+        .add-action-back{ margin-top:24px; text-align:center; }
+        .upload-section, .result-section, .func-box {
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(4px);
+            padding: 24px;
+            border-radius: 24px;
+            border: 1px solid rgba(102, 187, 106, 0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
+        .action-list-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .action-list-item {
+            background: white;
+            border-radius: 18px;
+            margin: 10px 0;
+            padding: 14px 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            transition: all 0.3s;
+            border: 1px solid #EDF2F7;
+            cursor: pointer;
+        }
+        .action-list-item:hover {
+            border-color: var(--gold);
+            background: #F4FCF4;
+            transform: translateY(-2px);
+        }
+        .action-list-item.active {
+            border-color: var(--gold);
+            background: #E8F5E9;
+        }
+        .action-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .expand-icon {
+            font-size: 18px;
+            color: #7f8c8d;
+        }
+        .action-detail-content {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #ccc;
+            font-size: 13px;
+            color: #2c3e50;
+            line-height: 1.6;
+            display: none;
+        }
+        .action-detail-content.show {
+            display: block;
+        }
+        .detail-loading {
+            color: #81A1B3;
+            font-style: italic;
+        }
+        #action-image-preview {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            margin-top: 15px;
+            border-radius: 20px;
+            border: 1px dashed #ccc;
+            background: #f8f9fa;
+            display: none;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            margin-top: 15px;
+            border-radius: 20px;
+            border: 1px dashed #ccc;
+            background: #F9FBF9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        #image-analyze-result {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* 过渡统一 */
+        a, button, .tab-item, .feature-card, .action-list-item {
+            transition: all 0.3s cubic-bezier(0.2,0,0,1);
+        }
+
+        @media (max-width: 768px) {
+            .core-layout, .more-func-layout, .image-analysis-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ---------- 移动端适配 ---------- */
+        @media (max-width: 768px) {
+            .home-container { padding: 20px 14px 28px; }
+            .tab-content { padding: 16px; }
+            .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; white-space: nowrap; padding-bottom: 4px; }
+            .tab-item { flex: 0 0 auto; }
+        }
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .core-layout, .more-func-layout, .image-analysis-layout { grid-template-columns: 1fr; gap: 14px; }
+            #more-tab .action-list-container { grid-template-columns: 1fr; gap: 12px; }
+            .upload-section, .result-section, .func-box { padding: 16px; }
+            input, select, textarea { font-size: 16px; }
+            .btn { width: 100%; }
+            #video-stream { border-radius: 14px; }
+            .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
+        }
+
+        /* ===== MoonWave · Editorial Luxury 统一样式(覆盖旧绿色主题, 与登录页一致) ===== */
+        :root{
+            --ivory:#FDFBF7; --ink:#2b2724; --mute:#6d645a;
+            --gold:#b0854a; --espresso:#2e2a27; --sage:#7c8f6f;
+            --serif:"Lora","Noto Serif SC","Songti SC","SimSun",Georgia,serif;
+            --sans:"Plus Jakarta Sans","Geist","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+        }
+        body{
+            background-color:var(--ivory);
+            background-image:
+                radial-gradient(60% 45% at 80% 12%, rgba(176,133,74,.08), transparent 60%),
+                radial-gradient(55% 50% at 15% 85%, rgba(124,143,111,.10), transparent 60%);
+        }
+        body::after{
+            content:""; position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.03;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        .container, .tabs, .tab-content { font-family:var(--sans); }
+        h1, h2, h3, .home-title, .section-title { font-family:var(--serif); color:var(--ink); }
+
+        .btn, .btn-success{
+            background:linear-gradient(135deg,#2e2a27,#3a332e);
+            color:#fdfcf9; border-radius:999px; box-shadow:0 10px 24px rgba(46,42,39,.16);
+        }
+        .btn:hover, .btn-success:hover{
+            background:linear-gradient(135deg,#3a332e,#2e2a27); transform:translateY(-2px);
+            box-shadow:0 14px 32px rgba(46,42,39,.20);
+        }
+        .btn-primary{ background:linear-gradient(135deg,#7c8f6f,#6f8063); box-shadow:0 10px 24px rgba(124,143,111,.22); border-radius:999px; }
+        .btn-primary:hover{ background:linear-gradient(135deg,#6f8063,#5f6f54); }
+        .btn-warning{ background:linear-gradient(135deg,#c98a5a,#b57a4c); box-shadow:0 10px 24px rgba(197,138,90,.20); border-radius:999px; }
+        .btn-warning:hover{ background:linear-gradient(135deg,#b57a4c,#a06b40); }
+
+        .tab-item.active{ color:var(--gold); }
+        .tab-item.active::after{ background:var(--gold); }
+
+        .tab-content, .result-box, .records-box, .upload-section, .result-section, .func-box{
+            background:rgba(255,253,249,.85); border:1px solid rgba(46,42,39,.06); border-radius:24px;
+            box-shadow:0 14px 40px rgba(46,42,39,.06);
+        }
+        .result-box, .records-box{ border-left:5px solid var(--gold); }
+        .feature-card{
+            background:var(--ivory); border:1px solid rgba(46,42,39,.06); border-radius:24px;
+            box-shadow:0 12px 34px rgba(46,42,39,.06);
+        }
+        .feature-card:hover{ box-shadow:0 18px 50px rgba(46,42,39,.10); transform:translateY(-3px); }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus{
+            border-color:var(--gold); box-shadow:0 0 0 4px rgba(176,133,74,.10);
+        }
+
+        /* 免责声明(主页底部 / 实时评估摄像头下方) */
+        .disclaimer{ margin-top:18px; font-size:12px; color:#a09890; line-height:1.6; text-align:center; }
+        /* 可及性: 大字模式(整体放大 15%) */
+        body.a11y-large{ zoom:1.15; }
+
+        /* 自测界面 */
+        .selftest-wrap{ max-width:760px; margin:0 auto; text-align:center; padding:12px 0 30px; }
+        .selftest-wrap .eyebrow{ display:inline-block; padding:7px 14px; border-radius:999px; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--mute); border:1px solid rgba(46,42,39,.08); background:rgba(255,255,255,.5); margin-bottom:14px; }
+        .selftest-wrap .section-title{ font-size:30px; margin-bottom:8px; }
+        .selftest-sub{ color:var(--mute); font-size:14px; margin-bottom:26px; }
+        .opt-card{
+            background:var(--ivory); border:1.5px solid rgba(46,42,39,.06); border-radius:20px;
+            padding:20px 14px; cursor:pointer; text-align:center; transition:all .25s var(--ease);
+            box-shadow:0 10px 26px rgba(46,42,39,.05);
+        }
+        .opt-card:hover{ transform:translateY(-3px); box-shadow:0 16px 38px rgba(46,42,39,.09); }
+        .opt-card.selected{ border-color:var(--gold); box-shadow:0 14px 36px rgba(176,133,74,.16); background:#fffdf9; }
+        .opt-ic{ font-size:34px; margin-bottom:8px; }
+        .opt-card b{ display:block; font-size:16px; color:var(--ink); margin-bottom:4px; }
+        .opt-card span{ font-size:12px; color:var(--mute); }
+
+        /* 普通版 / 定制版 */
+        .selftest-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:22px; text-align:left; }
+        .selftest-head .section-title{ text-align:left; }
+        .problem-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px; }
+        .plan-list{ display:flex; flex-wrap:wrap; gap:10px; }
+        .plan-more{ margin-top:14px; font-size:14px; }
+        .plan-more a{ color:var(--gold); text-decoration:none; cursor:pointer; font-weight:600; }
+        .plan-more a:hover{ text-decoration:underline; }
+        /* 方案卡片 */
+        .plan-entry{ display:flex; flex-direction:column; gap:12px; }
+        .plan-card{ border:1px solid rgba(102,187,106,.18); border-radius:16px; padding:16px 18px; background:#fff; cursor:pointer; transition:all .25s; }
+        .plan-card:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(0,0,0,.06); border-color:var(--gold); }
+        .plan-card.early{ border-left:5px solid #8bc34a; }
+        .plan-card.mid{ border-left:5px solid var(--gold); }
+        .plan-card.late{ border-left:5px solid #e74c3c; }
+        .plan-card.solo{ border-left:5px solid #9e9e9e; }
+        .pc-badge{ display:inline-block; font-size:11px; padding:2px 10px; border-radius:999px; background:#f0f0f0; color:#666; margin-bottom:8px; }
+        .plan-card.early .pc-badge{ background:#e8f5e9; color:#558b2f; }
+        .plan-card.mid .pc-badge{ background:#fdf3e0; color:#b0854a; }
+        .plan-card.late .pc-badge{ background:#fdecea; color:#c0392b; }
+        .plan-card.solo .pc-badge{ background:#ececec; color:#7f8c8d; }
+        .pc-title{ font-family:var(--serif); font-size:17px; font-weight:600; color:var(--ink); }
+        .pc-sub{ font-size:12px; color:var(--mute); margin-top:6px; line-height:1.5; }
+        .pc-meta{ font-size:12px; color:#888; margin-top:8px; }
+        .pc-warn{ margin-top:8px; font-size:12px; color:#c0392b; font-weight:600; }
+        /* 方案评估面板 */
+        .plan-panel{ background:linear-gradient(180deg,#fdfbf7,#fff); border:1px solid rgba(102,187,106,.2); border-radius:14px; padding:14px; margin-bottom:14px; }
+        .pp-title{ font-family:var(--serif); font-size:16px; font-weight:600; color:var(--ink); }
+        .pp-aud{ font-size:12px; color:var(--mute); margin-top:4px; line-height:1.5; }
+        .plan-progress{ font-size:13px; color:var(--gold); font-weight:600; margin-top:8px; }
+        .plan-steps{ margin-top:10px; max-height:220px; overflow-y:auto; }
+        .plan-step{ display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; cursor:pointer; font-size:13px; color:#444; }
+        .plan-step:hover{ background:#f4faf4; }
+        .plan-step.current{ background:#e8f5e9; color:var(--ink); font-weight:600; }
+        .ps-idx{ width:22px; height:22px; border-radius:50%; background:#eee; color:#888; display:flex; align-items:center; justify-content:center; font-size:12px; flex:none; }
+        .plan-step.current .ps-idx{ background:var(--gold); color:#fff; }
+        .plan-nav{ display:flex; gap:8px; margin-top:12px; }
+        .plan-nav .btn{ flex:1; }
+        .plan-exit{ width:100%; margin-top:10px; background:#f0f0f0; color:#666; }
+
+        .chat-shell{ background:var(--ivory); border:1px solid rgba(46,42,39,.06); border-radius:24px; padding:22px; text-align:left; min-height:220px; display:flex; flex-direction:column; gap:14px; }
+        #chat-log{ flex:1; display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; min-height:140px; }
+        .chat-bubble{ max-width:78%; padding:10px 14px; border-radius:16px; font-size:14px; line-height:1.6; }
+        .chat-bubble.user{ align-self:flex-end; background:var(--espresso); color:#fdfcf9; border-bottom-right-radius:4px; }
+        .chat-bubble.ai{ align-self:flex-start; background:var(--mute); color:var(--ink); border-bottom-left-radius:4px; }
+        .chat-input{ display:flex; gap:10px; align-items:flex-end; }
+        .chat-input textarea{ flex:1; resize:none; border:1px solid rgba(46,42,39,.10); border-radius:16px; padding:12px 14px; font-size:14px; background:#fff; color:var(--ink); min-height:48px; }
+        .chat-input textarea:focus{ outline:none; border-color:var(--gold); }
+        .chat-input .btn{ width:auto; padding:12px 20px; flex:0 0 auto; }
+        .action-item{ background:var(--ivory); border:1px solid rgba(46,42,39,.06); border-radius:20px; padding:18px 16px; box-shadow:0 10px 26px rgba(46,42,39,.05); }
+        .ai-name{ font-size:16px; font-weight:600; color:var(--ink); margin-bottom:14px; }
+        .ai-btns{ display:flex; gap:8px; flex-wrap:wrap; }
+        .ai-btns .btn{ flex:0 0 auto; padding:8px 14px; font-size:13px; }
+
+        /* ===== 顶栏(品牌 + 用户) ===== */
+        .app-header{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+        .app-brand{ display:flex; align-items:center; gap:10px; }
+        .app-logo{ height:42px; width:auto; border-radius:50%; box-shadow:0 6px 18px rgba(46,42,39,.12); }
+        .app-name{ font-family:var(--serif); font-size:24px; font-weight:600; color:var(--ink); letter-spacing:1px; white-space:nowrap; }
+        .app-user{ display:flex; align-items:center; gap:10px; }
+        .app-user-text{ font-size:13px; color:var(--mute); white-space:nowrap; }
+        /* 个人中心入口: 头像 + 用户名, 点击进入个人界面 */
+        .profile-entry{ display:flex; align-items:center; gap:8px; background:none; border:none; cursor:pointer; padding:4px 10px 4px 6px; border-radius:999px; transition:background .25s; }
+        .profile-entry:hover{ background:rgba(102,187,106,.14); }
+        .avatar-circle{ width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#b0854a,#e0c48a); display:flex; align-items:center; justify-content:center; color:#fff; flex:none; position:relative; overflow:hidden; }
+        .avatar-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+        .avatar-circle svg{ width:18px; height:18px; }
+        .avatar-circle.lg{ width:76px; height:76px; }
+        .avatar-circle.lg svg{ width:40px; height:40px; }
+        /* 个人中心悬浮面板(鼠标悬停头像触发, 非独立页面) */
+        .profile-wrap{ position:relative; padding-bottom:8px; margin-bottom:-8px; }
+        .profile-pop{ position:absolute; right:0; top:100%; width:300px; max-width:calc(100vw - 28px); background:#fff; border:1px solid #eee; border-radius:18px; box-shadow:0 18px 50px rgba(0,0,0,.14); z-index:1000; opacity:0; visibility:hidden; transform:translateY(-8px); transition:opacity .22s, transform .22s, visibility .22s; overflow:hidden; }
+        .profile-pop.open{ opacity:1; visibility:visible; transform:none; }
+        .pp-head{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px 6px; }
+        .pp-title{ font-family:var(--serif); font-size:18px; font-weight:600; color:var(--ink); }
+        .pp-user{ display:flex; align-items:center; gap:14px; padding:12px 18px; background:none; border:none; width:100%; cursor:pointer; text-align:left; }
+        .pp-user:hover{ background:#f7faf7; }
+        .pp-user-info{ flex:1; min-width:0; }
+        .pp-username{ display:block; font-size:16px; font-weight:600; color:var(--ink); }
+        .pp-arrow{ color:#bbb; font-size:16px; margin-left:auto; }
+        .pp-section{ border-top:1px solid #f0f0f0; padding:6px 0; }
+        .pp-item{ display:flex; align-items:center; gap:12px; width:100%; padding:12px 18px; background:none; border:none; cursor:pointer; color:var(--ink); font-size:14px; }
+        .pp-item:hover{ background:#f7faf7; }
+        .pp-item svg{ color:#8a8a8a; flex:none; }
+        .pp-logout{ display:block; width:calc(100% - 36px); margin:14px 18px 18px; padding:12px; background:#f4f4f4; border:none; border-radius:14px; color:#4a90e2; font-size:14px; cursor:pointer; }
+        .pp-logout:hover{ background:#ececec; }
+        /* 展开子区: 评估记录 / 设置 */
+        .pp-sub{ border-top:1px solid #f0f0f0; padding-bottom:6px; max-height:230px; overflow-y:auto; }
+        .pp-records-list{ padding:6px 18px 4px; }
+        .pp-record{ display:flex; justify-content:space-between; gap:10px; font-size:12px; color:#444; padding:8px 0; border-bottom:1px dashed #eee; }
+        .pp-record:last-child{ border-bottom:none; }
+        .pp-item.pp-static{ color:#999; cursor:default; }
+        .pp-item.pp-static svg{ color:#b5b5b5; }
+        /* 编辑资料态 */
+        .pp-edit-btn{ background:none; border:none; cursor:pointer; color:#8a8a8a; padding:4px; border-radius:8px; }
+        .pp-edit-btn:hover{ background:#f0f0f0; color:var(--gold); }
+        .pp-edit{ padding:6px 18px 18px; }
+        .pp-edit-avatar{ display:flex; align-items:center; gap:14px; margin-bottom:14px; padding:0 18px; }
+        .pp-avatar-btn{ width:auto; margin:0; padding:8px 14px; font-size:13px; }
+        .pp-field{ margin-bottom:12px; padding:0 18px; }
+        .pp-field label{ display:block; font-size:12px; color:var(--mute); margin-bottom:4px; }
+        .pp-field input{ width:100%; padding:9px 12px; border:1px solid #e5e5e5; border-radius:10px; font-size:14px; }
+        .pp-edit-actions{ display:flex; gap:10px; padding:0 18px; }
+        .pp-save{ flex:1; background:var(--gold); color:#fff; border-color:var(--gold); }
+        .pp-cancel{ flex:1; background:#f0f0f0; color:#555; border-color:#e0e0e0; }
+
+        /* ===== 移动端视觉优化(仅 <768px 生效, 不影响PC) ===== */
+        @media (max-width:768px){
+            .app-header{ gap:8px; margin-bottom:12px; }
+            .app-logo{ height:32px; }
+            .app-name{ font-size:19px; }
+            .app-user{ gap:6px; }
+            .app-user-text{ font-size:12px; }
+            .avatar-circle{ width:26px; height:26px; }
+            .avatar-circle svg{ width:15px; height:15px; }
+            .profile-entry{ padding:2px 6px; gap:6px; }
+
+            /* 导航栏: 单行横向滚动, 不换行 */
+            .tabs{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; white-space:nowrap; padding-bottom:6px; }
+            .tab-item{ flex:0 0 auto; white-space:nowrap; padding:12px 20px; }
+
+            .selftest-wrap{ padding:8px 0 18px; }
+            .selftest-wrap .eyebrow{ font-size:10px; padding:6px 12px; }
+            .selftest-wrap .section-title{ font-size:24px; }
+            .selftest-sub{ font-size:13px; margin-bottom:18px; }
+            .selftest-head{ flex-direction:column; align-items:stretch; gap:12px; }
+            .selftest-head .btn{ width:100%; }
+            .problem-grid{ grid-template-columns:repeat(2,1fr); gap:10px; }
+            .opt-card{ padding:16px 10px; border-radius:16px; }
+            .opt-ic{ font-size:28px; margin-bottom:6px; }
+            .opt-card b{ font-size:14px; }
+            .opt-card span{ font-size:11px; }
+            .plan-action-list{ grid-template-columns:1fr; }
+            .chat-shell{ padding:16px; min-height:200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="app-brand">
+                <img class="app-logo" src="/logo1.jpg" alt="月波">
+                <span class="app-name">月波康复</span>
+            </div>
+            <div id="user-bar" class="app-user">
+                <div class="profile-wrap" id="profile-wrap">
+                    <button class="profile-entry" id="profile-entry-btn" title="个人中心">
+                        <span class="avatar-circle"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><img id="header-avatar" class="avatar-img" style="display:none;" alt="头像"></span>
+                        <span class="app-user-text"><strong id="current-user-name"></strong></span>
+                    </button>
+                    <div class="profile-pop" id="profile-pop">
+                        <div class="pp-head"><span class="pp-title">我的</span></div>
+                        <button class="pp-user" onclick="profileGo('home')">
+                            <span class="avatar-circle lg"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><img id="pop-avatar" class="avatar-img" style="display:none;" alt="头像"></span>
+                            <span class="pp-user-info"><span class="pp-username" id="pop-username"></span></span>
+                            <span class="pp-arrow">›</span>
+                        </button>
+                        <div class="pp-section">
+                            <button class="pp-item" onclick="togglePopSection('username')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21c.8-3.5 3.3-6 6.5-6s5.7 2.5 6.5 6"/></svg>用户名<span class="pp-arrow" id="pp-username-arrow">›</span></button>
+                            <button class="pp-item" onclick="togglePopSection('avatar')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>头像<span class="pp-arrow" id="pp-avatar-arrow">›</span></button>
+                            <button class="pp-item" onclick="togglePopSection('records')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>评估记录<span class="pp-arrow" id="pp-records-arrow">›</span></button>
+                            <button class="pp-item" onclick="togglePopSection('settings')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h.01a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>设置<span class="pp-arrow" id="pp-settings-arrow">›</span></button>
+                        </div>
+                        <div class="pp-sub" id="pp-username-sub" style="display:none;">
+                            <div class="pp-field"><label>用户名</label><input type="text" id="pp-username-input" maxlength="40"></div>
+                            <div class="pp-edit-actions">
+                                <button class="btn pp-save" onclick="ppSaveName()">保存</button>
+                                <button class="btn pp-cancel" onclick="togglePopSection('username')">取消</button>
+                            </div>
+                        </div>
+                        <div class="pp-sub" id="pp-avatar-sub" style="display:none;">
+                            <div class="pp-edit-avatar">
+                                <span class="avatar-circle lg"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><img id="pp-edit-avatar" class="avatar-img" style="display:none;" alt="头像"></span>
+                                <label class="btn pp-avatar-btn" for="pp-avatar-file">更换头像</label>
+                                <input type="file" id="pp-avatar-file" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="pp-edit-actions">
+                                <button class="btn pp-save" onclick="ppSaveAvatar()">保存</button>
+                                <button class="btn pp-cancel" onclick="togglePopSection('avatar')">取消</button>
+                            </div>
+                        </div>
+                        <div class="pp-sub" id="pp-records-sub" style="display:none;">
+                            <div id="pp-records-list" class="pp-records-list">加载中...</div>
+                        </div>
+                        <div class="pp-sub" id="pp-settings-sub" style="display:none;">
+                            <div class="pp-item pp-static">关于月波康复</div>
+                            <div class="pp-item pp-static">版本 1.0.0</div>
+                        </div>
+                        <button class="pp-logout" onclick="logoutUser()">退出登录</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="tabs">
+            <div class="tab-item active" onclick="switchTab('home')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>主页</div>
+            <div class="tab-item" onclick="switchTab('core')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12 7 12 10 5 14 19 17 12 21 12"/></svg>实时评估</div>
+            <div class="tab-item" onclick="switchTab('image')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>图片分析</div>
+            <div class="tab-item" onclick="switchTab('more')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg>动作库管理</div>
+        </div>
+
+        <!-- 主页 -->
+        <div class="tab-content active" id="home-tab">
+            <div class="home-container">
+                <div class="selftest-wrap">
+                    <!-- 普通版 -->
+                    <div id="std-view">
+                        <div class="selftest-head">
+                            <div>
+                                <span class="eyebrow">康复自测 · 普通版</span>
+                                <h2 class="section-title">选择您遇到的问题</h2>
+                                <p class="selftest-sub">选择问题 → 查看推荐方案</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="showCustom()" style="width:auto;padding:10px 18px;font-size:14px;flex:0 0 auto;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l1.5 6.5L20 12l-6.5 1.5L12 20l-1.5-6.5L4 12l6.5-1.5Z"/></svg> 定制你的专属方案！</button>
+                        </div>
+                        <div class="problem-grid">
+                            <div class="opt-card" data-p="肩周炎" onclick="pickProb(this)"><div class="opt-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.8"/><path d="M8 11h8l1 4h-2l-1 5h-2l-1-5H8z"/></svg></div><b>肩周炎</b><span>肩部活动受限</span></div>
+                            <div class="opt-card" data-p="关节炎" onclick="pickProb(this)"><div class="opt-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2 3 3 0 0 1-1 5H9a3 3 0 0 1-1-5Z"/></svg></div><b>关节炎</b><span>关节疼痛 / 僵硬</span></div>
+                            <div class="opt-card" data-p="颈椎不适" onclick="pickProb(this)"><div class="opt-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5a3 3 0 0 0-3 3 3 3 0 0 0 0 6 3 3 0 0 0 6 0V8a3 3 0 0 0-3-3Z"/><path d="M15 5a3 3 0 0 1 3 3 3 3 0 0 1 0 6 3 3 0 0 1-6 0V8a3 3 0 0 1 3-3Z"/></svg></div><b>颈椎不适</b><span>颈肩僵硬</span></div>
+                            <div class="opt-card" data-p="腰肌劳损" onclick="pickProb(this)"><div class="opt-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v8H6z"/><path d="M7 4V2M17 4V2M8 12v8M16 12v8"/></svg></div><b>腰肌劳损</b><span>腰部酸痛</span></div>
+                            <div class="opt-card" data-p="膝关节炎" onclick="pickProb(this)"><div class="opt-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.8"/><path d="M8 11l8-2 1 5-8 2z"/><path d="M9 15l-3 6M15 12l4 5"/></svg></div><b>膝关节炎</b><span>膝痛 / 屈伸</span></div>
+                            <div class="opt-card" data-p="术后康复" onclick="pickProb(this)"><div class="opt-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4a3 3 0 0 1 3-3h1a3 3 0 0 1 3 3l-7 7Z"/><rect x="4" y="9" width="12" height="6" rx="1" transform="rotate(-45 10 12)"/></svg></div><b>术后康复</b><span>逐步恢复</span></div>
+                        </div>
+                        <div id="plan-area" style="margin-top:26px;text-align:left;">
+                            <h3 style="font-family:var(--serif);color:var(--ink);margin-bottom:12px;font-size:18px;">推荐方案<small style="font-family:var(--sans);color:var(--mute);font-weight:400;">（选择后跳转到评估）</small></h3>
+                            <div id="plan-list" class="plan-list"></div>
+                            <div class="plan-more"><a onclick="showMorePlans()">其他方案 →</a></div>
+                        </div>
+                        <div id="std-msg" class="msg"></div>
+                    </div>
+
+                    <!-- 定制版(壳) -->
+                    <div id="custom-view" style="display:none;">
+                        <div class="selftest-head">
+                            <div>
+                                <span class="eyebrow">AI 定制 · 专属方案</span>
+                                <h2 class="section-title">描述您的状况</h2>
+                                <p class="selftest-sub">用一两句话说说您哪里不舒服，AI 帮您判断并推荐方案（示例对话）</p>
+                            </div>
+                            <button class="btn" onclick="showStd()" style="width:auto;padding:10px 18px;font-size:14px;flex:0 0 auto;">← 返回普通版</button>
+                        </div>
+                        <div class="chat-shell">
+                            <div id="chat-log"></div>
+                            <div class="chat-input">
+                                <textarea id="chat-input" rows="2" placeholder="例：我右肩抬不起来，早上起来特别僵…"></textarea>
+                                <button class="btn btn-primary" onclick="sendChat()">发送</button>
+                            </div>
+                        </div>
+                        <div id="custom-msg" class="msg"></div>
+                    </div>
+
+                </div>
+                <div class="disclaimer">本系统提供的评估与训练建议仅供康复训练参考，不能替代专业医疗建议；训练中如出现疼痛或不适，请立即停止并咨询医师。</div>
+            </div>
+        </div>
+
+        <!-- 实时评估标签页 -->
+        <div class="tab-content" id="core-tab">
+            <div class="core-layout">
+                <div class="video-box">
+                    <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3"/></svg> 实时姿态识别</h2>
+                    <div style="position:relative;">
+                        <div style="position:relative;width:100%;border-radius:12px;background:#ddd;overflow:hidden;">
+  <video id="video-stream" autoplay muted playsinline style="width:100%;display:block;"></video>
+  <canvas id="pose-canvas" style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;"></canvas>
+</div>
+                        <div style="display:flex;gap:8px;margin-top:10px;">
+                            <button class="btn btn-success" id="camera-start-btn" onclick="startCamera()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg> 开启摄像头</button>
+                            <button class="btn btn-warning" id="camera-stop-btn" onclick="stopCamera()" disabled><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg> 关闭摄像头</button>
+                        </div>
+                        <div id="camera-overlay" style="position:absolute;left:0;top:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+                            <div id="camera-placeholder" style="background:rgba(255,255,255,0.6);padding:12px 18px;border-radius:10px;color:#666;font-weight:600;">摄像头未开启，请点击开始检测</div>
+                            <div id="camera-error" style="display:none;background:rgba(255,0,0,0.85);padding:12px 18px;border-radius:10px;color:#fff;font-weight:700;">摄像头打开失败，请检查设备后重试</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-panel">
+                    <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.8"/><path d="M5 12l7-2 7 2M12 10v6M8 21l4-5 4 5"/></svg> 康复动作评估</h2>
+                    <div id="plan-panel" class="plan-panel" style="display:none;">
+                        <div class="plan-panel-head" id="plan-panel-head"></div>
+                        <div class="plan-progress" id="plan-progress"></div>
+                        <div class="plan-steps" id="plan-steps"></div>
+                        <div class="plan-nav">
+                            <button class="btn" id="plan-prev-btn" onclick="planPrev()">‹ 上一动作</button>
+                            <button class="btn btn-primary" id="plan-next-btn" onclick="planNext()">下一动作 ›</button>
+                        </div>
+                        <button class="btn plan-exit" onclick="exitPlan()">退出方案</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="action-name">选择康复动作</label>
+                        <select id="action-name">
+                            <optgroup label="上肢康复">
+                                <option value="手臂上举">手臂上举（肩周炎康复）</option>
+                                <option value="右臂上举" selected>右臂上举（脑卒中上肢）</option>
+                            </optgroup>
+                            <optgroup label="下肢康复">
+                                <option value="屈膝训练">屈膝训练（膝关节康复）</option>
+                                <option value="膝关节屈曲">膝关节屈曲</option>
+                                <option value="左腿直腿抬高">左腿直腿抬高</option>
+                            </optgroup>
+                            <optgroup label="肩关节">
+                                <option value="左肩关节仰卧被动前屈">左肩关节仰卧被动前屈</option>
+                                <option value="右肩关节仰卧被动前屈">右肩关节仰卧被动前屈</option>
+                            </optgroup>
+                            <optgroup label="肘关节">
+                                <option value="左肘关节坐位主动屈伸">左肘关节坐位主动屈伸</option>
+                                <option value="右肘关节坐位主动屈伸">右肘关节坐位主动屈伸</option>
+                            </optgroup>
+                            <optgroup label="膝关节">
+                                <option value="左膝关节坐位主动屈伸">左膝关节坐位主动屈伸</option>
+                                <option value="右膝关节坐位主动屈伸">右膝关节坐位主动屈伸</option>
+                            </optgroup>
+                            <optgroup label="踝关节">
+                                <option value="左踝关节坐位勾脚与绷脚尖">左踝关节坐位勾脚与绷脚尖</option>
+                                <option value="右踝关节坐位勾脚与绷脚尖">右踝关节坐位勾脚与绷脚尖</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="username"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 21c0-4 3-6 7-6s7 2 7 6"/></svg> 当前用户</label>
+                        <input type="text" id="username" placeholder="请先登录" readonly>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button class="btn btn-success" id="start-eval-btn" onclick="startCamera()" style="flex:1;">▶ 开始实时评估</button>
+                        <button class="btn btn-warning" id="stop-eval-btn" onclick="stopCamera()" style="flex:1;" disabled>⏹ 停止评估</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="side-select">评估侧别（无左右之分的动作请选择患侧）</label>
+                        <select id="side-select">
+                            <option value="">自动（按动作名称）</option>
+                            <option value="left">左侧 / 左为患侧</option>
+                            <option value="right">右侧 / 右为患侧</option>
+                        </select>
+                    </div>
+                    <div style="display:flex;gap:16px;margin-bottom:12px;font-size:13px;color:#4A5A6A;">
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="a11y-large-toggle" onchange="toggleLargeFont(this.checked)"> 大字模式</label>
+                        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="a11y-speech-toggle" onchange="toggleSpeech(this.checked)"> 语音播报反馈</label>
+                    </div>
+                    <div class="disclaimer">摄像头画面仅用于本地姿态识别与评估，不会保存任何视频。</div>
+                    <button class="btn" onclick="saveRecord()" style="width:100%;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11l3 3v13H5z"/><path d="M9 4v5h6V4"/><rect x="9" y="14" width="6" height="6"/></svg> 保存评估记录</button>
+                    <div class="result-box">
+                        <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/><path d="M9 13h6M9 16h6"/></svg> 评估结果 <span id="eval-status-indicator" class="eval-status stopped">未启动</span></h3>
+                        <div id="evaluate-result" class="result-content">点击“开始实时评估”进行实时姿态分析与评估</div>
+                    </div>
+                    <div class="records-box">
+                        <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 16h6"/></svg> 康复记录查询</h3>
+                        <button class="btn" onclick="queryRecords()" style="width:100%;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 4v4h-4"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 20v-4h4"/></svg> 刷新记录</button>
+                        <div id="records-list" class="result-content">请输入用户名并点击刷新</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图片分析标签页 -->
+        <div class="tab-content" id="image-tab">
+            <div class="image-analysis-layout">
+                <div class="upload-section">
+                    <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m6 8 6-5 6 5"/><path d="M4 20h16"/></svg> 上传动作图片</h2>
+                    <div class="form-group">
+                        <label for="action-image">选择图片文件</label>
+                        <input type="file" id="action-image" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <div class="form-group">
+                        <label for="image-action-select">选择对应康复动作</label>
+                        <select id="image-action-select"><option value="">-- 请选择动作 --</option></select>
+                    </div>
+                    <button class="btn btn-success" onclick="analyzeImage()" style="width:100%;padding:14px;font-size:16px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> 开始图片分析</button>
+                    <div style="margin-top:25px;">
+                        <p style="font-weight:500;color:#4A5A6A;margin-bottom:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> 图片预览：</p>
+                        <img id="action-image-preview" alt="图片预览">
+                        <div id="image-placeholder" class="image-placeholder"><span>尚未上传图片</span></div>
+                    </div>
+                </div>
+                <div class="result-section">
+                    <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/><path d="M9 13h6M9 16h6"/></svg> 分析评估结果</h2>
+                    <div id="image-analyze-result">请上传图片并选择动作后点击分析</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 动作库管理标签页: 主界面仅保留动作库详情(分两列通栏), 底部留新增入口 -->
+        <div class="tab-content" id="more-tab">
+            <div class="more-lib-layout">
+                <div class="func-box func-box-full">
+                    <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5v13Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg> 动作库详情</h2>
+                    <div class="form-group"><label>康复动作列表（点击展开查看详情）</label></div>
+                    <div id="action-list" class="action-list-container"></div>
+                </div>
+                <div class="more-add-entry">
+                    <button class="btn btn-primary" onclick="switchTab('addaction')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l1.5 6.5L20 12l-6.5 1.5L12 20l-1.5-6.5L4 12l6.5-1.5Z"/></svg> 新增一个康复动作</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新增/编辑康复动作(独立跳转页, 由动作库管理底部入口或"编辑"按钮触发) -->
+        <div class="tab-content" id="addaction-tab">
+            <h2><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l1.5 6.5L20 12l-6.5 1.5L12 20l-1.5-6.5L4 12l6.5-1.5Z"/></svg> <span id="add-action-title">新增康复动作</span></h2>
+            <div class="add-action-form">
+                <div class="form-group"><label>动作名称 *</label><input type="text" id="new-action-name" placeholder="如：手腕旋转训练"></div>
+                <div class="form-group"><label>适用部位 *</label><input type="text" id="new-action-part" placeholder="如：腕"></div>
+                <div class="form-group"><label>适用病症 *</label><input type="text" id="new-action-disease" placeholder="如：腕管综合征恢复期"></div>
+                <div class="form-group"><label>目标肌群</label><input type="text" id="new-action-muscles" value="腕屈肌、腕伸肌"></div>
+                <div class="form-group"><label>动作要点</label><textarea id="new-action-points">1. 手臂自然下垂；2. 缓慢旋转手腕；3. 避免用力过猛</textarea></div>
+                <div class="form-group"><label>禁忌人群</label><input type="text" id="new-action-contra" value="腕关节脱位史禁用"></div>
+                <div class="form-group"><label>标准来源 / 审核人（选填）</label><input type="text" id="new-action-source" placeholder="如：某康复指导手册 / 医师审核；留空视为演示阈值未经审核"></div>
+                <div class="form-group"><label>难度（1-5）</label><input type="number" id="new-action-difficulty" min="1" max="5" value="2"></div>
+                <div class="form-group"><label>标准角度（JSON）</label><textarea id="new-action-standard">{"joint_angles":{"wrist":[30,150]}}</textarea></div>
+                <div class="form-group"><label>错误提示（JSON）</label><textarea id="new-action-error">{"wrist_too_high":{"angle":">150","tip":"手腕旋转过度，避免拉伤"}}</textarea></div>
+                <div class="form-group"><label>训练建议（JSON）</label><textarea id="new-action-recommend">{"times_per_set":15,"sets":3,"rhythm":"2秒旋转，1秒停留","breath":"旋转呼气，复位吸气"}</textarea></div>
+                <button class="btn btn-primary" id="add-action-submit-btn" onclick="addNewAction()" style="width:100%;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l1.5 6.5L20 12l-6.5 1.5L12 20l-1.5-6.5L4 12l6.5-1.5Z"/></svg> 新增动作</button>
+                <button class="btn" id="cancel-edit-btn" onclick="cancelEdit()" style="width:100%;margin-top:10px;display:none;">退出编辑（恢复新增模式）</button>
+                <div class="result-box" style="margin-top:20px;"><h3>操作结果</h3><div id="add-action-result" class="result-content">请填写信息并点击新增</div></div>
+                <div class="add-action-back">
+                    <button class="btn" onclick="switchTab('more')">返回动作库管理</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        // ===== A′ 客户端姿态估计: 在自己浏览器用 MediaPipe PoseLandmarker 检测, =====
+        // 本地画骨架, 再把 landmark 发后端做判定。初始化失败则回退方案1(逐帧上传)。
+        (async () => {
+            try {
+                const { FilesetResolver, PoseLandmarker } = await import('/mediapipe/vision_bundle.mjs');
+                const vision = await FilesetResolver.forVisionTasks('/mediapipe');
+                const base = {
+                    baseOptions: { modelAssetPath: '/mediapipe/pose_landmarker_lite.task', delegate: 'GPU' },
+                    runningMode: 'VIDEO',
+                    numPoses: 1,
+                    minPoseDetectionConfidence: 0.5,
+                    minPosePresenceConfidence: 0.5,
+                    minTrackingConfidence: 0.5
+                };
+                try {
+                    window.__mpPoseLandmarker = await PoseLandmarker.createFromOptions(vision, base);
+                } catch (gpuErr) {
+                    // GPU 后端不可用(部分安卓), 降级到 CPU
+                    console.warn('GPU 后端初始化失败, 降级 CPU', gpuErr);
+                    base.baseOptions.delegate = 'CPU';
+                    window.__mpPoseLandmarker = await PoseLandmarker.createFromOptions(vision, base);
+                }
+                window.__mpPoseReady = true;
+                document.dispatchEvent(new Event('mp-pose-ready'));
+            } catch (e) {
+                console.error('MediaPipe 客户端姿态初始化失败, 回退方案1', e);
+                window.__mpPoseReady = false;
+            }
+        })();
+    </script>
+
+    <script>
+        // ==================== 全部功能逻辑（完整保留） ====================
+        const API_BASE = '';
+        let latestEvaluateResult = null;
+        let actionListLoaded = false;
+        let imageActionsLoaded = false;
+        let currentUser = null;
+        let currentToken = null;
+
+        function fetchWithAuth(url, options = {}) {
+            options.headers = options.headers || {};
+            if (currentToken) {
+                options.headers['Authorization'] = `Bearer ${currentToken}`;
+            }
+            return fetch(url, options);
+        }
+
+        function setAuthState(username, token) {
+            currentUser = username;
+            currentToken = token;
+            localStorage.setItem('rehab_token', token);
+            localStorage.setItem('rehab_username', username);
+            const uname = document.getElementById('current-user-name');
+            if (uname) uname.textContent = username;
+            const popu = document.getElementById('pop-username');
+            if (popu) popu.textContent = username;
+            const ub = document.getElementById('user-bar');
+            if (ub) ub.style.display = 'flex';
+        }
+
+        function clearAuthState() {
+            currentUser = null;
+            currentToken = null;
+            localStorage.removeItem('rehab_token');
+            localStorage.removeItem('rehab_username');
+            // 先登录后进应用: 未认证统一跳转到独立登录页
+            window.location.href = '/login.html';
+        }
+
+        async function checkAuthStatus() {
+            const token = localStorage.getItem('rehab_token');
+            if (!token) {
+                clearAuthState();
+                return;
+            }
+            currentToken = token;
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/user/info`);
+                const data = await res.json();
+                if (data.code === 200 && data.data?.username) {
+                    setAuthState(data.data.username, token);
+                    loadProfile();   // 拉取头像和资料
+                } else {
+                    clearAuthState();
+                }
+            } catch (e) {
+                clearAuthState();
+            }
+        }
+
+        function ensureLoggedIn() {
+            if (!currentUser) {
+                alert('请先登录');
+                switchTab('home');
+                return false;
+            }
+            return true;
+        }
+
+        async function logoutUser() {
+            clearAuthState();  // 清除登录态并跳转到 /login.html
+        }
+
+        // 首页定制: 普通版(选问题->推荐方案/单独动作->实时/图片评估) + 定制版(AI对话壳)
+        // 病症->动作数据统一来自后端 /api/rehab/protocols, 前端不再维护第二份数据源
+        var curProb = null;
+
+        // ===== HTML 转义(动作名等动态内容不再直接拼 innerHTML) =====
+        function escapeHtml(s){
+            return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+            });
+        }
+
+        function pickProb(el){
+            curProb = el.getAttribute('data-p');
+            document.querySelectorAll('.problem-grid .opt-card').forEach(function(c){ c.classList.remove('selected'); });
+            el.classList.add('selected');
+            renderPlans(curProb);
+        }
+        let _PROTO = null;
+        async function fetchProtocols(){
+            try{ const r=await fetchWithAuth(`${API_BASE}/api/rehab/protocols`); const j=await r.json(); return j.code===200 ? j.data : {}; }catch(e){ return {}; }
+        }
+        function renderPlans(prob){
+            (async function(){
+                if(!_PROTO){ _PROTO = await fetchProtocols(); }
+                var info = (_PROTO && _PROTO[prob]);
+                var list = document.getElementById('plan-list');
+                var msg = document.getElementById('std-msg');
+                var plans = info ? (info.plans||[]) : [];
+                if(!info){
+                    list.innerHTML = '<div style="color:var(--mute);padding:12px 0;">暂无该问题的方案数据</div>';
+                    msg.style.color='#c0392b'; msg.textContent='未找到「'+prob+'」的康复方案'; return;
+                }
+                if(!plans.length){
+                    list.innerHTML = '<div style="color:var(--mute);padding:12px 0;">该问题暂无完整方案，可展开下方「单独动作」逐个训练</div>';
+                } else {
+                    var html = '<div class="plan-entry">'+ plans.map(function(p,i){
+                        return '<div class="plan-card '+(p.stage)+'" onclick="startPlan(\''+prob+'\','+i+')">'+
+                            '<div class="pc-badge">'+(p.stage==='early'?'前期训练':(p.stage==='mid'?'中期训练':'后期训练'))+'</div>'+
+                            '<div class="pc-title">'+escapeHtml(p.title)+'</div>'+
+                            '<div class="pc-sub">'+escapeHtml(p.audience)+'</div>'+
+                            '<div class="pc-meta">'+p.actions.length+' 个动作</div>'+
+                            (p.warning?'<div class="pc-warn">⚠️ 强度较大 · 谨慎选择</div>':'')+
+                        '</div>';
+                    }).join('')+
+                    '<div class="plan-card solo" onclick="showSoloList(\''+prob+'\')">'+
+                        '<div class="pc-badge">单独动作</div>'+
+                        '<div class="pc-title">单独动作</div>'+
+                        '<div class="pc-sub">展开该问题下的单个动作，逐个进入评估</div>'+
+                    '</div></div>';
+                    list.innerHTML = html;
+                }
+                msg.style.color='#2e8b57'; msg.textContent='已选问题：'+prob+'，选择一套方案进入方案评估，或展开「单独动作」';
+            })();
+        }
+        // 生成"实时评估 / 图片评估"按钮组(DOM 构建, 动作名不进 innerHTML)
+        function makeEvalButtons(action){
+            var wrap = document.createElement('div'); wrap.className='ai-btns';
+            var b1 = document.createElement('button'); b1.className='btn btn-success';
+            b1.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3"/></svg> 实时评估';
+            b1.onclick = function(){ goEval(action,'core'); };
+            var b2 = document.createElement('button'); b2.className='btn btn-primary';
+            b2.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> 图片评估';
+            b2.onclick = function(){ goEval(action,'image'); };
+            wrap.appendChild(b1); wrap.appendChild(b2);
+            return wrap;
+        }
+        function makeActionItem(action){
+            var item = document.createElement('div'); item.className='action-item';
+            var nm = document.createElement('div'); nm.className='ai-name'; nm.textContent = action;
+            item.appendChild(nm);
+            item.appendChild(makeEvalButtons(action));
+            return item;
+        }
+        function showSoloList(prob){
+            exitPlan();
+            var info = _PROTO && _PROTO[prob];
+            var solo = info ? (info.solo_actions||[]) : [];
+            var list = document.getElementById('plan-list');
+            list.innerHTML = '';
+            var entry = document.createElement('div'); entry.className='plan-entry solo-list';
+            entry.style.cssText='display:flex;flex-direction:column;gap:10px;';
+            solo.forEach(function(a){ entry.appendChild(makeActionItem(a)); });
+            list.appendChild(entry);
+            document.getElementById('std-msg').style.color='#2e8b57';
+            document.getElementById('std-msg').textContent='已展开「'+prob+'」的单独动作，点一个进入对应评估';
+        }
+        // ===== 方案实时评估(复用核心评估管线) =====
+        let curPlan = null, curPlanProb = null, curPlanObj = null, curPlanIdx = 0;
+        async function startPlan(prob, idx){
+            if(!_PROTO) _PROTO = await fetchProtocols();
+            var info = _PROTO && _PROTO[prob];
+            var plan = info && info.plans && info.plans[idx];
+            if(!plan){ alert('方案加载失败'); return; }
+            if(plan.warning){
+                if(!confirm(plan.warning_text || '该方案强度较大，适合已基本康复、体能较好的用户，请确认身体状况并谨慎选择。')) return;
+            }
+            curPlanProb = prob; curPlanObj = plan; curPlan = plan.actions; curPlanIdx = 0;
+            setCurAction(); renderPlanPanel();
+            document.getElementById('plan-panel').style.display = 'block';
+            switchTab('core');
+        }
+        function setCurAction(){
+            var a = curPlan[curPlanIdx];
+            setActionSelect('action-name', a.action);
+        }
+        function renderPlanPanel(){
+            var head=document.getElementById('plan-panel-head');
+            var prog=document.getElementById('plan-progress');
+            var steps=document.getElementById('plan-steps');
+            var prevBtn=document.getElementById('plan-prev-btn');
+            var nextBtn=document.getElementById('plan-next-btn');
+            if(!head || !curPlan) return;
+            head.innerHTML = '<div class="pp-title">'+(curPlanProb||'')+' · '+(curPlanObj?curPlanObj.title:'')+'</div>'+
+                '<div class="pp-aud">'+(curPlanObj?curPlanObj.audience:'')+'</div>';
+            prog.textContent = '第 '+(curPlanIdx+1)+' / '+curPlan.length+' 个动作';
+            steps.innerHTML = curPlan.map(function(a,i){
+                var act = a.action + ' · ' + a.sets + '组 × ' + a.reps + '次';
+                return '<div class="plan-step '+(i===curPlanIdx?'current':'')+'" onclick="planJump('+i+')">'+
+                    '<span class="ps-idx">'+(i+1)+'</span><span class="ps-name">'+act+'</span></div>';
+            }).join('');
+            prevBtn.disabled = (curPlanIdx<=0);
+            nextBtn.disabled = (curPlanIdx>=curPlan.length-1);
+        }
+        function planJump(i){ if(i>=0 && i<curPlan.length){ curPlanIdx=i; setCurAction(); renderPlanPanel(); } }
+        function planNext(){ if(curPlanIdx < curPlan.length-1){ curPlanIdx++; setCurAction(); renderPlanPanel(); } }
+        function planPrev(){ if(curPlanIdx>0){ curPlanIdx--; setCurAction(); renderPlanPanel(); } }
+        function exitPlan(){ curPlan=null; curPlanProb=null; curPlanObj=null; curPlanIdx=0; var p=document.getElementById('plan-panel'); if(p) p.style.display='none'; }
+        function setActionSelect(selId, action){
+            var sel = document.getElementById(selId);
+            if(!sel) return;
+            for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value===action || sel.options[i].text===action){ sel.selectedIndex=i; return; } }
+            var o = document.createElement('option'); o.value=action; o.text=action; sel.appendChild(o); sel.value=action;
+        }
+        function goEval(action, mode){
+            if(mode==='image'){
+                setActionSelect('image-action-select', action);
+            } else {
+                setActionSelect('action-name', action);
+            }
+            switchTab(mode==='image'?'image':'core');
+        }
+        function showMorePlans(){
+            var m = document.getElementById('std-msg');
+            if(curProb){ renderPlans('其他方案'); m.style.color='#6d645a'; m.textContent='已为你展示「其他方案」'; }
+            else { m.style.color='#c0392b'; m.textContent='请先选择一个遇到的问题'; }
+        }
+        function showCustom(){ document.getElementById('std-view').style.display='none'; document.getElementById('custom-view').style.display='block'; }
+        function showStd(){ document.getElementById('std-view').style.display='block'; document.getElementById('custom-view').style.display='none'; }
+
+        // 定制版: AI 对话(壳, 示例回复)
+        function addChat(role, text){
+            var log = document.getElementById('chat-log');
+            var b = document.createElement('div');
+            b.className = 'chat-bubble ' + (role==='user'?'user':'ai');
+            b.textContent = text;
+            log.appendChild(b); log.scrollTop = log.scrollHeight;
+        }
+        async function sendChat(){
+            var inp = document.getElementById('chat-input');
+            var t = inp.value.trim();
+            var m = document.getElementById('custom-msg');
+            if(!t){ m.style.color='#c0392b'; m.textContent='请先描述您的状况'; return; }
+            addChat('user', t);
+            inp.value=''; m.textContent='';
+            addChat('ai','正在为您分析…');
+            setTimeout(function(){
+                m.style.color='#2e8b57';
+                m.textContent='（示例）根据您的描述，可能是【肩周炎 / 相关病症】，建议：肩关节活动度训练、爬墙训练，并可到「实时评估」做专业姿态检查～';
+            }, 900);
+        }
+
+        const actionDetailCache = {};
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-item').forEach(item => {
+                if ((tabName === 'home' && item.innerText.includes('主页')) ||
+                    (tabName === 'core' && item.innerText.includes('实时评估')) ||
+                    (tabName === 'image' && item.innerText.includes('图片分析')) ||
+                    (tabName === 'more' && item.innerText.includes('动作库管理')) ||
+                    (tabName === 'addaction' && item.innerText.includes('动作库管理'))) {
+                    item.classList.add('active');
+                }
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            if (tabName !== 'core') stopCamera();   // 离开实时评估页自动关闭摄像头
+            if (tabName === 'image' && !imageActionsLoaded) { loadImageActionSelect(); imageActionsLoaded = true; }
+            if (tabName === 'more' && !actionListLoaded) { loadActionList(); actionListLoaded = true; }
+        }
+
+        // ===== 个人中心悬浮面板: 鼠标悬停头像一定时间触发, 非独立页面 =====
+        var _popEnterTimer = null, _popLeaveTimer = null;
+        function showProfilePop(){ clearTimeout(_popLeaveTimer); var p=document.getElementById('profile-pop'); if(p) p.classList.add('open'); }
+        function hideProfilePop(){ var p=document.getElementById('profile-pop'); if(p) p.classList.remove('open'); }
+        function profileGo(tab){ hideProfilePop(); switchTab(tab); }
+        // 展开/收起某个子区(用户名/头像/评估记录/设置), 互斥
+        function togglePopSection(name){
+            var subs = {username:'pp-username-sub', avatar:'pp-avatar-sub', records:'pp-records-sub', settings:'pp-settings-sub'};
+            var arrows = {username:'pp-username-arrow', avatar:'pp-avatar-arrow', records:'pp-records-arrow', settings:'pp-settings-arrow'};
+            var target = document.getElementById(subs[name]);
+            var wasOpen = target && target.style.display === 'block';
+            Object.keys(subs).forEach(function(k){
+                var s = document.getElementById(subs[k]); if(s) s.style.display = 'none';
+                var a = document.getElementById(arrows[k]); if(a) a.textContent = '›';
+            });
+            if(!wasOpen && target){
+                target.style.display = 'block';
+                var a = document.getElementById(arrows[name]); if(a) a.textContent = '⌄';
+                if(name === 'records') loadRecords();
+                if(name === 'username'){ var inp=document.getElementById('pp-username-input'); if(inp) inp.value = currentUser || ''; }
+                if(name === 'avatar') syncAvatarPreview();
+            }
+        }
+        async function loadRecords(){
+            const el = document.getElementById('pp-records-list');
+            if(!el) return;
+            el.innerHTML = '加载中...';
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/rehab/query`);
+                const data = await res.json();
+                if(data.code === 200){
+                    if(!data.data || data.data.length === 0){ el.innerHTML = '<div class="pp-record">暂无评估记录</div>'; }
+                    else { let h=''; data.data.forEach((r)=>{ h+=`<div class="pp-record"><span>${escapeHtml(r.action)}</span><span>${r.score}分</span><span>${escapeHtml(r.time)}</span></div>`; }); el.innerHTML=h; }
+                } else el.innerHTML = `<div class="pp-record">查询失败：${escapeHtml(data.message)}</div>`;
+            } catch(e) { el.innerHTML = `<div class="pp-record">查询出错：${e.message}</div>`; }
+        }
+        // ===== 编辑资料: 头像 + 用户名 =====
+        var _pendingAvatar = null;
+        function applyAvatar(url){
+            document.querySelectorAll('.avatar-circle').forEach(function(c){
+                var img = c.querySelector('img.avatar-img');
+                var svg = c.querySelector('svg');
+                if(url){ if(img){ img.src=url; img.style.display='block'; } if(svg){ svg.style.display='none'; } }
+                else  { if(img){ img.style.display='none'; } if(svg){ svg.style.display='block'; } }
+            });
+        }
+        async function loadProfile(){
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/user/profile`);
+                const data = await res.json();
+                if(data.code===200 && data.data){
+                    if(data.data.avatar) applyAvatar(data.data.avatar);
+                    if(data.data.username){
+                        if(currentUser !== data.data.username){ currentUser=data.data.username; localStorage.setItem('rehab_username', data.data.username); }
+                        var u=document.getElementById('current-user-name'); if(u) u.textContent=currentUser;
+                        var pu=document.getElementById('pop-username'); if(pu) pu.textContent=currentUser;
+                    }
+                }
+            } catch(e) { /* 保持默认头像 */ }
+        }
+        function syncAvatarPreview(){
+            var cur=document.getElementById('pop-avatar');
+            var prev=document.getElementById('pp-edit-avatar');
+            if(prev && cur && cur.style.display!=='none'){ prev.src=cur.src; prev.style.display='block'; }
+            else if(prev){ prev.style.display='none'; }
+        }
+        function onAvatarFile(ev){
+            var file = ev.target.files && ev.target.files[0];
+            if(!file) return;
+            var reader = new FileReader();
+            reader.onload = function(e){
+                var img = new Image();
+                img.onload = function(){
+                    var size=200; var canvas=document.createElement('canvas');
+                    canvas.width=size; canvas.height=size;
+                    var ctx=canvas.getContext('2d');
+                    var s=Math.min(img.width,img.height);
+                    ctx.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,size,size);
+                    _pendingAvatar = canvas.toDataURL('image/jpeg',0.85);
+                    var prev=document.getElementById('pp-edit-avatar');
+                    if(prev){ prev.src=_pendingAvatar; prev.style.display='block'; }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        async function ppSaveName(){
+            if(!ensureLoggedIn()) return;
+            var inp=document.getElementById('pp-username-input');
+            var newName = inp ? inp.value.trim() : '';
+            if(!newName){ alert('用户名不能为空'); return; }
+            if(newName === currentUser){ togglePopSection('username'); return; }
+            try{
+                var res=await fetchWithAuth(`${API_BASE}/api/user/update`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:newName})});
+                var data=await res.json();
+                if(data.code===200){
+                    currentUser=data.data.username;
+                    localStorage.setItem('rehab_username', data.data.username);
+                    var u=document.getElementById('current-user-name'); if(u) u.textContent=data.data.username;
+                    var pu=document.getElementById('pop-username'); if(pu) pu.textContent=data.data.username;
+                    togglePopSection('username');
+                } else alert(data.message||'保存失败');
+            }catch(e){ alert('保存失败：'+e.message); }
+        }
+        async function ppSaveAvatar(){
+            if(!ensureLoggedIn()) return;
+            if(!_pendingAvatar){ alert('请先选择新的头像图片'); return; }
+            try{
+                var res=await fetchWithAuth(`${API_BASE}/api/user/update`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({avatar:_pendingAvatar})});
+                var data=await res.json();
+                if(data.code===200){
+                    if(data.data.avatar) applyAvatar(data.data.avatar);
+                    _pendingAvatar=null;
+                    togglePopSection('avatar');
+                } else alert(data.message||'保存失败');
+            }catch(e){ alert('保存失败：'+e.message); }
+        }
+        (function initProfilePop(){
+            var wrap = document.getElementById('profile-wrap');
+            var btn = document.getElementById('profile-entry-btn');
+            if(!wrap || !btn) return;
+            // 悬停一段时间后展开; 进入/离开都监听 wrap(含面板), 移到面板上不收起
+            wrap.addEventListener('mouseenter', function(){ clearTimeout(_popLeaveTimer); _popEnterTimer=setTimeout(showProfilePop, 600); });
+            wrap.addEventListener('mouseleave', function(){ clearTimeout(_popEnterTimer); _popLeaveTimer=setTimeout(hideProfilePop, 400); });
+            // 触屏/点击直接开合
+            btn.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation();
+                var p=document.getElementById('profile-pop');
+                if(p.classList.contains('open')){ hideProfilePop(); } else { clearTimeout(_popEnterTimer); showProfilePop(); }
+            });
+            // 点击面板外关闭
+            document.addEventListener('click', function(e){ if(!wrap.contains(e.target)) hideProfilePop(); });
+            // 填充用户名
+            var popu=document.getElementById('pop-username');
+            if(popu && currentUser) popu.textContent = currentUser;
+            // 头像文件选择
+            var af=document.getElementById('pp-avatar-file');
+            if(af) af.addEventListener('change', onAvatarFile);
+        })();
+
+        // 统一评估结果入口: 记录 latestEvaluateResult 供"保存评估记录"使用,
+        // 再渲染(此前新流程只渲染不记录, 导致保存按钮永远提示"请先完成动作评估")
+        function applyEvalResult(evalData) {
+            const el = document.getElementById('evaluate-result');
+            if (!evalData) {
+                latestEvaluateResult = null;
+                if (el) el.innerHTML = '<div>⚠️ 未找到该动作的评估标准，请确认动作库中存在该动作</div>';
+                return;
+            }
+            latestEvaluateResult = evalData;
+            renderEvaluateResult({ data: evalData });
+            speakFeedback('动作' + evalData.action_name + '，' + evalData.score + '分，'
+                + (evalData.overall_standard ? '达标' : '未达标') + '。' + (evalData.feedback || ''));
+        }
+
+        // ===== 可及性: 大字模式 / 语音播报(开关状态本地记忆) =====
+        function toggleLargeFont(on){
+            document.body.classList.toggle('a11y-large', !!on);
+            try{ localStorage.setItem('rehab_a11y_large', on ? '1' : '0'); }catch(e){}
+        }
+        function toggleSpeech(on){
+            try{ localStorage.setItem('rehab_a11y_speech', on ? '1' : '0'); }catch(e){}
+            if(on) speakFeedback('语音播报已开启');
+        }
+        function speakFeedback(text){
+            try{
+                if(localStorage.getItem('rehab_a11y_speech') !== '1' || !window.speechSynthesis) return;
+                speechSynthesis.cancel();
+                var u = new SpeechSynthesisUtterance(text);
+                u.lang = 'zh-CN';
+                speechSynthesis.speak(u);
+            }catch(e){}
+        }
+        // 无侧别动作的评估侧别(空 = 自动按动作名称)
+        function getSelectedSide(){
+            var s = document.getElementById('side-select');
+            return (s && s.value) ? s.value : null;
+        }
+
+        // 关节英文名称转中文映射表（优化直腿抬高动作显示）
+        function getJointChineseName(jointKey, actionName = '') {
+            const lowerKey = jointKey.toLowerCase();
+            if (lowerKey.includes('elbow')) return '肘关节';
+            if (lowerKey.includes('shoulder')) return '肩关节';
+            if (lowerKey.includes('knee')) return '膝关节';
+            if (lowerKey.includes('hip')) return '髋关节';
+            if (lowerKey.includes('ankle')) return '踝关节';
+            if (jointKey === 'main_joint') {
+                if (actionName.includes('直腿抬高')) return '髋膝关节';
+                if (actionName.includes('臂上举') || actionName.includes('肩')) return '肩关节';
+                if (actionName.includes('屈膝') || actionName.includes('膝')) return '膝关节';
+                if (actionName.includes('肘')) return '肘关节';
+                if (actionName.includes('髋')) return '髋关节';
+                if (actionName.includes('踝')) return '踝关节';
+                return '核心关节';
+            }
+            return jointKey;
+        }
+
+        function renderEvaluateResult(result) {
+            const el = document.getElementById('evaluate-result');
+            if(!result?.data) { el.innerHTML="<div>评估失败：暂无有效数据</div>"; return; }
+            const d = result.data;
+            const actionName = escapeHtml(d.action_name);
+            const rec = d.recommendation || {};
+            let html = `<div>动作名称：${actionName}</div>${d.side_used?`<div>评估侧别：${escapeHtml(d.side_used)}</div>`:''}<div>整体达标：${d.overall_standard?'✓ 是':'✗ 否'}</div><div>评估得分：${d.score}分</div><div>时序一致度：${d.temporal_similarity!=null ? (d.temporal_similarity*100).toFixed(0)+'%' : '暂无(首次达标后自动采集)'}</div><div>瞬时角度分：${d.score_frame!=null ? d.score_frame : d.score}</div><div>评估反馈：${escapeHtml(d.feedback)}</div><div>训练建议：每组${rec.times_per_set}次，共${rec.sets}组，${escapeHtml(rec.rhythm)}</div>`;
+            (d.joint_evaluate||[]).forEach(item => {
+                const jointChinese = getJointChineseName(item.joint, d.action_name || '');
+                html += `<div>- ${jointChinese}：当前${item.current_angle}°（标准${escapeHtml(item.standard_range)}）${item.is_standard?'✓':'✗'} ${escapeHtml(item.error_tip)}</div>`;
+            });
+            el.innerHTML = html;
+        }
+
+        async function saveRecord() {
+            if(!ensureLoggedIn()) return;
+            if(!latestEvaluateResult) { alert("请先完成动作评估！"); return; }
+            try {
+                await fetchWithAuth(`${API_BASE}/api/rehab/save`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+                    action: latestEvaluateResult.action_name,
+                    score: latestEvaluateResult.score,
+                    detail: {
+                        score_frame: latestEvaluateResult.score_frame,
+                        temporal_similarity: latestEvaluateResult.temporal_similarity,
+                        joint_evaluate: latestEvaluateResult.joint_evaluate
+                    }
+                })});
+                alert("记录保存成功！"); queryRecords();
+            } catch(e) { alert(`保存出错：${e.message}`); }
+        }
+
+        // 明细摘要: 瞬时角度分 / 时序一致度 / 关节达标数
+        function recordDetailText(detail){
+            if(!detail) return '';
+            const je = detail.joint_evaluate || [];
+            const ok = je.filter(x=>x.is_standard).length;
+            const parts = [];
+            if(detail.score_frame!=null) parts.push('瞬时'+detail.score_frame+'分');
+            if(detail.temporal_similarity!=null) parts.push('时序'+Math.round(detail.temporal_similarity*100)+'%');
+            if(je.length) parts.push('关节达标'+ok+'/'+je.length);
+            return parts.length ? '（'+parts.join(' · ')+'）' : '';
+        }
+
+        async function queryRecords() {
+            if(!ensureLoggedIn()) return;
+            const el = document.getElementById('records-list');
+            el.innerHTML = "正在查询...";
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/rehab/query`);
+                const data = await res.json();
+                if(data.code===200) {
+                    if(data.data.length===0) el.innerHTML="暂无康复记录";
+                    else { let html=""; data.data.forEach((r,i)=>{ const det=recordDetailText(r.detail); html+=`<div class="record-item"><p><strong>第${i+1}条</strong>：${escapeHtml(r.action)} - ${r.score}分 - ${escapeHtml(r.time)}</p>${det?`<p style="font-size:12px;color:#8899AA;margin-top:4px;">明细${det}</p>`:''}</div>`; }); el.innerHTML=html; }
+                } else el.innerHTML = `查询失败：${escapeHtml(data.message)}`;
+            } catch(e) { el.innerHTML = `查询出错：${e.message}`; }
+        }
+
+        function previewImage(event) {
+            const preview = document.getElementById('action-image-preview');
+            const placeholder = document.getElementById('image-placeholder');
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = e => { preview.src = e.target.result; preview.style.display='block'; placeholder.style.display='none'; };
+                reader.readAsDataURL(file);
+            } else { preview.style.display='none'; placeholder.style.display='flex'; }
+        }
+
+        async function loadImageActionSelect() {
+            const select = document.getElementById('image-action-select');
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/action_lib/list`);
+                const data = await res.json();
+                if(data.code===200) {
+                    select.innerHTML = '<option value="">-- 请选择动作 --</option>';
+                    data.data.forEach(a => { const opt = document.createElement('option'); opt.value=a.name; opt.textContent=`${a.name} (${a.body_part})`; select.appendChild(opt); });
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function renderImageEvalResult(data) {
+            const el = document.getElementById('image-analyze-result');
+            const actionName = escapeHtml(data.action_name);
+            const rec = data.recommendation || {};
+            let html = `<p><strong>动作名称：</strong>${actionName}</p><p><strong>整体评估：</strong>${data.overall_standard?'✅ 动作标准':'❌ 动作未达标'}</p><p><strong>评估得分：</strong>${data.score} 分</p><p><strong>评估反馈：</strong>${escapeHtml(data.feedback)}</p><p><strong>各关节详情：</strong></p><ul>`;
+            (data.joint_evaluate||[]).forEach(item => {
+                const jointChinese = getJointChineseName(item.joint, data.action_name || '');
+                html += `<li>${item.is_standard?'✅':'⚠️'} ${jointChinese}：当前 ${item.current_angle}°（标准范围 ${escapeHtml(item.standard_range)}°）<br><span style="color:${item.is_standard?'#2ecc71':'#e67e22'};">${escapeHtml(item.error_tip)}</span></li>`;
+            });
+            html += `</ul><p><strong>训练建议：</strong>每组 ${rec.times_per_set} 次，共 ${rec.sets} 组，${escapeHtml(rec.rhythm)}，${escapeHtml(rec.breath)}</p>`;
+            el.innerHTML = html;
+        }
+
+        async function analyzeImage() {
+            if(!ensureLoggedIn()) return;
+            const fileInput = document.getElementById('action-image');
+            const actionName = document.getElementById('image-action-select').value;
+            const el = document.getElementById('image-analyze-result');
+            if(!fileInput.files.length) { alert("请先上传图片！"); return; }
+            if(!actionName) { alert("请选择对应的康复动作！"); return; }
+            el.innerHTML = "正在分析图片，请稍候...";
+            try {
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+                formData.append('action_name', actionName);
+                var sideSel = getSelectedSide();
+                if(sideSel) formData.append('side', sideSel);
+                const res = await fetchWithAuth(`${API_BASE}/api/pose/analyze_with_eval`, {method:'POST',body:formData});
+                const data = await res.json();
+                if(data.code===200) renderImageEvalResult(data.data);
+                else el.innerHTML = `分析失败：${escapeHtml(data.message)}`;
+            } catch(e) { el.innerHTML = `分析出错：${e.message}`; }
+        }
+
+        async function loadActionList() {
+            const container = document.getElementById('action-list');
+            container.innerHTML = "正在加载动作库...";
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/action_lib/list`);
+                const data = await res.json();
+                container.innerHTML = "";
+                if(data.code===200 && data.data.length) {
+                    data.data.forEach(action => {
+                        const item = document.createElement('div'); item.className='action-list-item'; item.dataset.actionId=action.id;
+                        const header = document.createElement('div'); header.className='action-item-header';
+                        // 名称/部位来自用户可编辑的动作库, 一律转义后再入 innerHTML
+                        const info = document.createElement('div');
+                        const nm = document.createElement('p'); const b = document.createElement('strong'); b.textContent = action.name; nm.appendChild(b);
+                        const bp = document.createElement('p'); bp.style.cssText='font-size:12px;color:#666;'; bp.textContent = '适用部位：'+action.body_part;
+                        info.appendChild(nm); info.appendChild(bp);
+                        const icon = document.createElement('span'); icon.className='expand-icon'; icon.textContent='▼';
+                        header.appendChild(info); header.appendChild(icon);
+                        const detail = document.createElement('div'); detail.className='action-detail-content'; detail.id=`detail-${action.id}`; detail.innerHTML='<p class="detail-loading">点击加载详情...</p>';
+                        item.appendChild(header); item.appendChild(detail);
+                        item.addEventListener('click', (e)=>{ e.stopPropagation(); toggleActionDetail(action.id, item); });
+                        container.appendChild(item);
+                    });
+                } else container.innerHTML = "暂无动作库数据";
+            } catch(e) { container.innerHTML = `加载失败：${e.message}`; }
+        }
+
+        async function toggleActionDetail(actionId, itemElement) {
+            const detailDiv = document.getElementById(`detail-${actionId}`);
+            const icon = itemElement.querySelector('.expand-icon');
+            if(detailDiv.classList.contains('show')) { detailDiv.classList.remove('show'); icon.textContent='▼'; itemElement.classList.remove('active'); return; }
+            document.querySelectorAll('.action-detail-content.show').forEach(el=>{ el.classList.remove('show'); const p=el.closest('.action-list-item'); if(p){ p.classList.remove('active'); p.querySelector('.expand-icon').textContent='▼'; } });
+            detailDiv.classList.add('show'); icon.textContent='▲'; itemElement.classList.add('active');
+            if(!actionDetailCache[actionId]) {
+                detailDiv.innerHTML = '<p class="detail-loading">正在加载详情...</p>';
+                try {
+                    const res = await fetchWithAuth(`${API_BASE}/api/action_lib/detail/${actionId}`);
+                    const data = await res.json();
+                    if(data.code===200) { actionDetailCache[actionId]=data.data; renderActionDetail(detailDiv, data.data); }
+                    else detailDiv.innerHTML = `<p>加载失败：${escapeHtml(data.message)}</p>`;
+                } catch(e) { detailDiv.innerHTML = `<p>加载出错：${e.message}</p>`; }
+            } else renderActionDetail(detailDiv, actionDetailCache[actionId]);
+        }
+
+        function renderActionDetail(container, action) {
+            let contraHtml='', pointsHtml='';
+            if(action.contraindications) { const items=action.contraindications.split(/[；;]/).filter(s=>s.trim()); if(items.length) { contraHtml='<p><strong>禁忌人群：</strong></p><ol style="margin-left:20px;">'; items.forEach(i=>contraHtml+=`<li>${escapeHtml(stripNum(i))}</li>`); contraHtml+='</ol>'; } }
+            if(action.standard_points) { const items=action.standard_points.split(/[；;]/).filter(s=>s.trim()); if(items.length) { pointsHtml='<p><strong>动作要点：</strong></p><ol style="margin-left:20px;">'; items.forEach(i=>pointsHtml+=`<li>${escapeHtml(stripNum(i))}</li>`); pointsHtml+='</ol>'; } }
+            container.innerHTML = `<p><strong>动作名称：</strong>${escapeHtml(action.name)}</p><p><strong>适用部位：</strong>${escapeHtml(action.body_part)}</p><p><strong>适用病症：</strong>${escapeHtml(action.disease_stage)}</p><p><strong>目标肌群：</strong>${escapeHtml(action.target_muscles)}</p><p><strong>难度等级：</strong>${action.difficulty}级</p><p><strong>标准来源：</strong>${action.reference_source?escapeHtml(action.reference_source):'<span style="color:#c0392b;">未标注（演示阈值，未经医师审核）</span>'}</p>${contraHtml||'<p><strong>禁忌人群：</strong>暂无</p>'}${pointsHtml||''}
+                <div style="margin-top:14px;display:flex;gap:8px;">
+                    <button class="btn btn-primary" style="flex:1;" onclick="event.stopPropagation();editAction('${action.id}')">编辑</button>
+                    <button class="btn btn-warning" style="flex:1;" onclick="event.stopPropagation();deleteAction('${action.id}')">删除</button>
+                </div>`;
+        }
+
+        // 去掉列表项自带的 "1." / "1、" / "1）" 前缀, 交由 <ol> 统一编号, 避免出现 "1.1." 重复序号
+        function stripNum(s){ return s.replace(/^\s*\d{1,2}\s*[.、)）]\s*/, '').trim(); }
+
+        // ===== 动作库编辑态: 非空表示正在编辑该 id =====
+        let editingActionId = null;
+
+        function resetAddActionUI(){
+            editingActionId = null;
+            document.getElementById('add-action-title').textContent = '新增康复动作';
+            var sb = document.getElementById('add-action-submit-btn'); if(sb) sb.textContent = '新增动作';
+            var cb = document.getElementById('cancel-edit-btn'); if(cb) cb.style.display = 'none';
+        }
+
+        function cancelEdit(){
+            resetAddActionUI();
+            document.getElementById('new-action-name').value = '';
+            document.getElementById('new-action-part').value = '';
+            document.getElementById('new-action-disease').value = '';
+            document.getElementById('new-action-source').value = '';
+            document.getElementById('add-action-result').innerHTML = '已退出编辑，请填写信息并点击新增';
+        }
+
+        async function editAction(actionId){
+            if(!ensureLoggedIn()) return;
+            var d = actionDetailCache[actionId];
+            if(!d){
+                try {
+                    const res = await fetchWithAuth(`${API_BASE}/api/action_lib/detail/${actionId}`);
+                    const data = await res.json();
+                    if(data.code!==200){ alert('加载动作详情失败：'+(data.message||'')); return; }
+                    d = data.data; actionDetailCache[actionId] = d;
+                } catch(e){ alert('加载动作详情出错：'+e.message); return; }
+            }
+            editingActionId = actionId;
+            document.getElementById('new-action-name').value = d.name || '';
+            document.getElementById('new-action-part').value = d.body_part || '';
+            document.getElementById('new-action-disease').value = d.disease_stage || '';
+            document.getElementById('new-action-muscles').value = d.target_muscles || '';
+            document.getElementById('new-action-points').value = d.standard_points || '';
+            document.getElementById('new-action-contra').value = d.contraindications || '';
+            document.getElementById('new-action-source').value = d.reference_source || '';
+            document.getElementById('new-action-difficulty').value = d.difficulty || 2;
+            document.getElementById('new-action-standard').value = JSON.stringify(d.standard_pose || {}, null, 2);
+            document.getElementById('new-action-error').value = JSON.stringify(d.error_pose || {}, null, 2);
+            document.getElementById('new-action-recommend').value = JSON.stringify(d.recommendation || {}, null, 2);
+            document.getElementById('add-action-title').textContent = '编辑康复动作';
+            document.getElementById('add-action-submit-btn').textContent = '保存修改';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+            document.getElementById('add-action-result').innerHTML = '正在编辑动作：' + escapeHtml(d.name);
+            switchTab('addaction');
+        }
+
+        async function deleteAction(actionId){
+            if(!ensureLoggedIn()) return;
+            if(!confirm('确定删除该康复动作吗？删除后使用该动作的评估将不可用。')) return;
+            try {
+                const res = await fetchWithAuth(`${API_BASE}/api/action_lib/delete/${actionId}`, {method:'DELETE'});
+                const data = await res.json();
+                if(data.code===200){
+                    delete actionDetailCache[actionId];
+                    actionListLoaded = false; imageActionsLoaded = false;
+                    loadActionList();
+                    if(document.getElementById('image-tab').classList.contains('active')) { loadImageActionSelect(); imageActionsLoaded=true; }
+                } else alert('删除失败：'+(data.message||''));
+            } catch(e){ alert('删除出错：'+e.message); }
+        }
+
+        async function addNewAction() {
+            const name = document.getElementById('new-action-name').value;
+            const bodyPart = document.getElementById('new-action-part').value;
+            const disease = document.getElementById('new-action-disease').value;
+            const muscles = document.getElementById('new-action-muscles').value;
+            const points = document.getElementById('new-action-points').value;
+            const contra = document.getElementById('new-action-contra').value;
+            const difficulty = document.getElementById('new-action-difficulty').value;
+            const standard = document.getElementById('new-action-standard').value;
+            const errorPose = document.getElementById('new-action-error').value;
+            const recommend = document.getElementById('new-action-recommend').value;
+            const resultEl = document.getElementById('add-action-result');
+            if(!name||!bodyPart||!disease) { alert("请填写动作名称、适用部位、适用病症！"); return; }
+            try { JSON.parse(standard); JSON.parse(errorPose); JSON.parse(recommend); } catch { alert("标准角度、错误提示或训练建议JSON格式错误！"); return; }
+            const isEdit = !!editingActionId;
+            resultEl.innerHTML = isEdit ? "正在保存修改，请稍候..." : "正在新增动作，请稍候...";
+            try {
+                const payload = {name, body_part:bodyPart, disease_stage:disease, target_muscles:muscles, standard_points:points, contraindications:contra, standard_pose:standard, error_pose:errorPose, recommendation:recommend, difficulty:parseInt(difficulty)||2, reference_source:(document.getElementById('new-action-source').value.trim()||null)};
+                const res = isEdit
+                    ? await fetchWithAuth(`${API_BASE}/api/action_lib/update/${editingActionId}`, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+                    : await fetchWithAuth(`${API_BASE}/api/action_lib/add`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+                const data = await res.json();
+                if(data.code===200) {
+                    if(isEdit) delete actionDetailCache[editingActionId];
+                    resultEl.innerHTML = isEdit ? '✅ 修改成功！' : `✅ 新增成功！动作ID：${data.data.action_id}`;
+                    resetAddActionUI();
+                    document.getElementById('new-action-name').value = '';
+                    document.getElementById('new-action-part').value = '';
+                    document.getElementById('new-action-disease').value = '';
+                    actionListLoaded = false; imageActionsLoaded = false;
+                    switchTab('more');   // 回到动作库列表查看结果
+                    loadActionList();
+                    if(document.getElementById('image-tab').classList.contains('active')) { loadImageActionSelect(); imageActionsLoaded=true; }
+                } else resultEl.innerHTML = `❌ 保存失败：${escapeHtml(data.message)}`;
+            } catch(e) { resultEl.innerHTML = `❌ 保存出错：${e.message}`; }
+        }
+
+        // ========== 方案1: 浏览器本地取流 + 逐帧分析 ==========
+        let cameraStream = null;
+        let analyzeTimer = null;
+        let rafId = null;            // 骨架连续渲染
+        let lastLandmarks = null;    // 最近一次骨架(供 tickLoop 持续绘制)
+        let frameSeq = 0;            // 帧序号(用于去重, 只采用最新帧)
+        let appliedSeq = 0;          // 已采用的最新帧序号
+        let lastDetectTs = 0;        // 上次检测时刻
+        let detecting = false;       // 客户端检测忙碌标记(避免重入)
+
+        async function startCamera(){
+            if(!ensureLoggedIn()) return;
+            if(cameraStream){ if(!analyzeTimer) startAnalyzeLoop(); return; }
+            try{
+                cameraStream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480},audio:false});
+                const video = document.getElementById('video-stream');
+                video.srcObject = cameraStream;
+                await video.play();
+                document.getElementById('camera-start-btn').disabled = true;
+                document.getElementById('camera-stop-btn').disabled = false;
+                const se = document.getElementById('start-eval-btn'); if(se) se.disabled = true;
+                const te = document.getElementById('stop-eval-btn'); if(te) te.disabled = false;
+                document.getElementById('camera-placeholder').style.display = 'none';
+                document.getElementById('eval-status-indicator').className = 'eval-status running';
+                document.getElementById('eval-status-indicator').textContent = '评估中';
+                startAnalyzeLoop();
+            }catch(e){
+                alert('无法打开摄像头：'+e.message);
+                document.getElementById('camera-start-btn').disabled = false;
+            }
+        }
+
+        function startAnalyzeLoop(){
+            if(analyzeTimer) clearInterval(analyzeTimer);
+            analyzeTimer = null;
+            if(rafId) cancelAnimationFrame(rafId);
+            lastDetectTs = 0;
+            tickLoop();
+        }
+
+        // 统一 rAF 循环: 数据检测与绘制解耦。客户端模式(A′)本地检测; 否则回退方案1。
+        function tickLoop(){
+            var c = document.getElementById('pose-canvas');
+            var video = document.getElementById('video-stream');
+            if(video && video.readyState>=2){
+                var now = performance.now();
+                if(window.__mpPoseLandmarker){
+                    if(!detecting && (now - lastDetectTs)>=66){   // ~15fps 本地检测
+                        lastDetectTs = now;
+                        detectLocally(video);
+                    }
+                } else if((now - lastDetectTs)>=150){             // ~6fps 方案1回退
+                    lastDetectTs = now;
+                    submitFrameServer();
+                }
+                if(c && c.getContext){
+                    var ctx = c.getContext('2d');
+                    if(c.width && c.height){
+                        ctx.clearRect(0,0,c.width,c.height);
+                        if(lastLandmarks) drawSkeleton(ctx, lastLandmarks, c.width, c.height);
+                    }
+                }
+            }
+            rafId = requestAnimationFrame(tickLoop);
+        }
+
+        async function detectLocally(video){
+            detecting = true;
+            try{
+                var res = await window.__mpPoseLandmarker.detectForVideo(video, performance.now());
+                var lms = res.landmarks && res.landmarks[0];
+                if(lms && lms.length){
+                    var arr = lms.map(p=>[p.x,p.y,p.z]);
+                    lastLandmarks = arr;   // 直接使用检测结果, 不做插值
+                    var canvas = document.getElementById('pose-canvas');
+                    if(canvas && video.videoWidth){ canvas.width = video.videoWidth; canvas.height = video.videoHeight; }
+                    // landmark 发后端判定(轻量, 往返快)
+                    var actionName = document.getElementById('action-name').value;
+                    var body = JSON.stringify({landmarks:arr, action_name:actionName||null, side:getSelectedSide()});
+                    fetchWithAuth(`${API_BASE}/api/pose/analyze_landmarks`, {method:'POST', headers:{'Content-Type':'application/json'}, body:body})
+                        .then(r=>r.json()).then(j=>{
+                            if(j.code===200 && j.data) applyEvalResult(j.data.eval);
+                        }).catch(function(){});
+                } else {
+                    lastLandmarks = null;
+                    document.getElementById('evaluate-result').innerHTML = '<div>未检测到人体姿态</div>';
+                }
+            }catch(e){ /* 单帧失败忽略 */ }
+            finally{ detecting = false; }
+        }
+
+        async function submitFrameServer(){
+            // 方案1回退: 逐帧上传图片到服务器推理(含并发去重)
+            const video = document.getElementById('video-stream');
+            const canvas = document.getElementById('pose-canvas');
+            if(!video || video.readyState < 2) return;
+            const w = video.videoWidth, h = video.videoHeight;
+            if(!w || !h) return;
+            canvas.width = w; canvas.height = h;
+            var cap = document.getElementById('frame-cap');
+            if(!cap){ cap = document.createElement('canvas'); cap.id='frame-cap'; cap.style.display='none'; document.body.appendChild(cap); }
+            cap.width = w; cap.height = h;
+            cap.getContext('2d').drawImage(video, 0, 0, w, h);
+            const blob = await new Promise(r=>cap.toBlob(r,'image/jpeg',0.7));
+            if(!blob) return;
+            const fd = new FormData();
+            fd.append('file', blob, 'frame.jpg');
+            const actionName = document.getElementById('action-name').value;
+            if(actionName) fd.append('action_name', actionName);
+            var sideSel = getSelectedSide();
+            if(sideSel) fd.append('side', sideSel);
+            var seq = ++frameSeq;
+            try{
+                const res = await fetchWithAuth(`${API_BASE}/api/pose/analyze_frame`, {method:'POST', body:fd});
+                const j = await res.json();
+                if(seq > appliedSeq){
+                    appliedSeq = seq;
+                    if(j.code===200){
+                        lastLandmarks = j.data.landmarks;
+                        applyEvalResult(j.data.eval);
+                    } else {
+                        lastLandmarks = null;
+                        document.getElementById('evaluate-result').innerHTML = '<div>未检测到人体姿态</div>';
+                    }
+                }
+            }catch(e){ /* 单帧失败忽略 */ }
+        }
+
+        function drawSkeleton(ctx, landmarks, w, h){
+            if(!landmarks) return;
+            // 与镜像视频对齐: 水平翻转 x
+            const pt = i => landmarks[i] ? [(1-landmarks[i][0])*w, landmarks[i][1]*h] : null;
+            const conn = [[11,13],[13,15],[12,14],[14,16],[11,12],[23,24],[23,25],[25,27],[24,26],[26,28],[11,23],[12,24],[27,29],[29,31],[28,30],[30,32]];
+            ctx.strokeStyle='#00ff00'; ctx.lineWidth=2;
+            for(const [a,b] of conn){ const pa=pt(a), pb=pt(b); if(pa&&pb){ ctx.beginPath(); ctx.moveTo(pa[0],pa[1]); ctx.lineTo(pb[0],pb[1]); ctx.stroke(); } }
+            ctx.fillStyle='#ffee00';
+            for(let i=0;i<landmarks.length;i++){ const p=pt(i); if(p){ ctx.beginPath(); ctx.arc(p[0],p[1],3,0,Math.PI*2); ctx.fill(); } }
+        }
+
+        async function stopCamera(){
+            if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; }
+            if(analyzeTimer){ clearInterval(analyzeTimer); analyzeTimer=null; }
+            if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+            lastLandmarks = null;
+            lastDetectTs = 0;
+            detecting = false;
+            const video = document.getElementById('video-stream');
+            if(video) video.srcObject = null;
+            const canvas = document.getElementById('pose-canvas');
+            if(canvas){ canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height); }
+            document.getElementById('camera-start-btn').disabled = false;
+            document.getElementById('camera-stop-btn').disabled = true;
+            document.getElementById('camera-placeholder').style.display = 'block';
+            const se = document.getElementById('start-eval-btn'); if(se) se.disabled = false;
+            const te = document.getElementById('stop-eval-btn'); if(te) te.disabled = true;
+            document.getElementById('eval-status-indicator').className = 'eval-status stopped';
+            document.getElementById('eval-status-indicator').textContent = '已停止';
+        }
+
+        // 切换标签页时自动关闭摄像头
+        document.addEventListener('visibilitychange', function(){
+            if(document.hidden){ stopCamera(); }
+        });
+
+        window.onload = function() {
+            checkAuthStatus();
+            // 恢复可及性开关(大字/语音)
+            try{
+                if(localStorage.getItem('rehab_a11y_large') === '1'){
+                    var lt = document.getElementById('a11y-large-toggle');
+                    if(lt) lt.checked = true;
+                    document.body.classList.add('a11y-large');
+                }
+                if(localStorage.getItem('rehab_a11y_speech') === '1'){
+                    var st = document.getElementById('a11y-speech-toggle');
+                    if(st) st.checked = true;
+                }
+            }catch(e){}
+            window.addEventListener('beforeunload', stopCamera);
+        };
+
+        window.addEventListener('beforeunload', function() {
+            // 方案1: 客户端拥有摄像头, 卸载时仅停本地流(不杀后端)
+            try{ if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop()); } catch(e){}
+        });
+    </script>
+</body>
+</html>

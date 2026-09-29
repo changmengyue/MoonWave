@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check:
+    name: 自测与语法检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 算法自测（ALPS / DTW，纯标准库，无需数据库与摄像头）
+        run: python test_alps_lite.py
+
+      - name: 后端与模块语法检查
+        run: python -m py_compile zitaishibie.py alps_lite.py talma_lite_api.py
+
+      - name: 前端关键文件存在性检查
+        run: |
+          test -f index.html
+          test -f login.html
+          test -f rehab_protocols.json
+          test -f action_seed.json

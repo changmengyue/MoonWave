@@ -1,5 +1,7 @@
 # MoonWave 月波康复
 
+[![CI](https://github.com/changmengyue/MoonWave/actions/workflows/ci.yml/badge.svg)](https://github.com/changmengyue/MoonWave/actions/workflows/ci.yml) [![Release](https://img.shields.io/github/v/release/changmengyue/MoonWave?label=release)](https://github.com/changmengyue/MoonWave/releases) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 > 一个 AI 运动康复指导系统：**浏览器端做姿态估计**，后端做关节角度判定、评分与时序评估，并提供动作库与分阶段康复方案。
 
 MoonWave（月波康复）是一个全栈的「AI 运动康复指导」Web 应用。面向康复训练场景，用户在浏览器里对着摄像头做动作，系统实时识别姿态、判定动作是否标准、给出评分与反馈，并按「症状 → 早/中/后期三套方案」引导训练。

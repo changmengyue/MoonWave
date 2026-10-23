@@ -9,7 +9,6 @@ from alps_lite import (
     dtw_align,
     filter_one_to_one,
     evaluate_segment,
-    similarity,
 )
 
 random.seed(0)

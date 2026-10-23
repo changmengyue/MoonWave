@@ -1,0 +1,18 @@
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+exclude = [".git", "venv", ".venv", "mediapipe", "__pycache__"]
+
+[tool.ruff.lint]
+# 先用「默认规则集 + 致命错误」，不追求一次到位：
+# 历史代码里还有 40 处 blind-except、17 处一行多语句，一次性重写会淹没真正的改动。
+select = ["E4", "E7", "E9", "F"]
+ignore = ["E702"]        # 一行多语句（`a(); b()`）：历史写法，后续逐步清理
+
+[tool.ruff.lint.per-file-ignores]
+# 路由需要 app 创建之后再挂载，所以 talma_lite_api 的 import 不在文件顶部
+"zitaishibie.py" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

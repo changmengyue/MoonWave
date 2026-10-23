@@ -1,0 +1,12 @@
+# 测试与静态检查依赖。
+#
+# 故意不含 mediapipe / opencv：tests/conftest.py 用替身模块替换这两个依赖，
+# 接口测试不碰图像推理，CI 因此不必为一次测试下载上百 MB 的推理库。
+
+fastapi>=0.110
+uvicorn>=0.29
+pymysql>=1.1
+numpy>=1.24
+pytest>=8
+httpx>=0.27
+ruff>=0.6

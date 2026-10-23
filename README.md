@@ -137,6 +137,19 @@ python zitaishibie.py
 
 生产部署（nginx 反代 + systemd）参见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)。
 
+## 开发与测试
+
+接口测试不需要 MySQL，也不需要摄像头：`tests/conftest.py` 用替身替换了数据库连接与 CV 依赖，
+所以不装 mediapipe / opencv 也能跑。
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest       # 接口测试：注册登录 / 姿态判定 / 动作库 / 静态白名单
+ruff check .           # 静态检查（配置见 pyproject.toml）
+```
+
+`python test_alps_lite.py` 仍是 ALPS / DTW 算法的独立自测（纯标准库、零依赖），CI 里两者都会跑。
+
 ## 使用说明
 
 1. 打开 `/login.html` 注册并登录。

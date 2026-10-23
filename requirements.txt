@@ -7,6 +7,6 @@ pydantic>=2.5
 python-multipart>=0.0.9
 pymysql>=1.1
 numpy>=1.24
-Pillow>=10.0
+Pillow>=13.0.0
 mediapipe>=0.10,<0.11
 opencv-python-headless>=4.8

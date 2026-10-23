@@ -52,6 +52,16 @@ python zitaishibie.py
 python test_alps_lite.py
 ```
 
+接口测试与静态检查（同样不需要数据库与摄像头，`tests/conftest.py` 用替身替换了 DB 与 CV 依赖）：
+
+```bash
+pip install -r requirements-dev.txt
+python -m pytest
+ruff check .
+```
+
+提 PR 前请确保这三条都过；CI 会跑同样的命令。
+
 ## 代码规范
 
 - **保持改动最小**：只改与本次目标相关的代码，不要顺手重构无关部分。

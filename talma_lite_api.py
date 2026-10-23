@@ -18,7 +18,6 @@ TALMA-on-ALPS 轻量版 —— FastAPI 路由
 注意: mediapipe 只在 "上传图片" 接口内**延迟导入**, 所以本模块在
 没有 mediapipe 的环境也能 import 成功(只影响图片接口)。
 """
-import json
 
 import alps_lite
 

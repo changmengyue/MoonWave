@@ -8,6 +8,6 @@ uvicorn>=0.29
 pymysql>=1.1
 numpy>=1.24
 python-multipart>=0.0.9
-pytest>=8
+pytest>=9.1.1
 httpx>=0.27
 ruff>=0.6

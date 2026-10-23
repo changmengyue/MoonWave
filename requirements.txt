@@ -2,7 +2,7 @@
 # 如需完全可复现的构建，可在部署环境执行 pip freeze > constraints.txt 生成锁文件。
 fastapi>=0.110
 uvicorn[standard]>=0.29
-gunicorn>=21.2
+gunicorn>=26.2.0
 pydantic>=2.5
 python-multipart>=0.0.9
 pymysql>=1.1
